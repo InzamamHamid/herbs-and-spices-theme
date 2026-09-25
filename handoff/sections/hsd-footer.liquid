@@ -1,0 +1,60 @@
+{%- assign s = section.settings -%}
+<footer class="hsd hsd-footer">
+  <div class="hsd-container">
+    <div class="hsd-footer__grid">
+      <div class="hsd-footer__brand">
+        {% render 'hsd-logo', logo: s.logo, width: 240, dark: true %}
+        {%- if s.tagline != blank -%}<span class="hsd-footer__tagline">{{ s.tagline | escape }}</span>{%- endif -%}
+      </div>
+      {%- for menu in (1..2) -%}
+        {%- liquid
+          if menu == 1
+            assign list = s.menu_1
+          else
+            assign list = s.menu_2
+          endif
+        -%}
+        {%- if list != blank -%}
+          <nav class="hsd-footer__col" aria-label="{{ list.title | escape }}">
+            <h2>{{ list.title | escape }}</h2>
+            <ul>{%- for link in list.links -%}<li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>{%- endfor -%}</ul>
+          </nav>
+        {%- endif -%}
+      {%- endfor -%}
+      <div class="hsd-footer__col hsd-footer__col--visit">
+        <h2>Visit</h2>
+        <address>
+          {{ s.address | escape | newline_to_br }}<br>
+          {%- if s.hours != blank -%}{{ s.hours | escape }}<br>{%- endif -%}
+          {%- if s.phone != blank -%}<a href="tel:{{ s.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">{{ s.phone | escape }}</a><br>{%- endif -%}
+          {%- if s.email != blank -%}<a href="mailto:{{ s.email }}">{{ s.email | escape }}</a>{%- endif -%}
+        </address>
+      </div>
+    </div>
+
+    <div class="hsd-footer__bottom">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name | escape }}</span>
+      <ul>
+        {%- for policy in shop.policies -%}<li><a href="{{ policy.url }}">{{ policy.title | escape }}</a></li>{%- endfor -%}
+      </ul>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "HSD Footer",
+  "class": "hsd-section-footer",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo for dark background", "info": "Optional. Typed wordmark shows when empty." },
+    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Eat healthy · Live healthy" },
+    { "type": "link_list", "id": "menu_1", "label": "Menu 1", "default": "main-menu" },
+    { "type": "link_list", "id": "menu_2", "label": "Menu 2", "default": "footer" },
+    { "type": "textarea", "id": "address", "label": "Address", "default": "401 E 16th Ave, Suite H\nCordele, GA 31015" },
+    { "type": "text", "id": "hours", "label": "Hours", "default": "Open 7 days, 10am – 7pm" },
+    { "type": "text", "id": "phone", "label": "Phone", "default": "(229) 513-4377" },
+    { "type": "text", "id": "email", "label": "Email", "default": "herbsandspicescordele@gmail.com" }
+  ],
+  "enabled_on": { "groups": ["footer"] }
+}
+{% endschema %}

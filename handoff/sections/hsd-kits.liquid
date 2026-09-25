@@ -1,0 +1,98 @@
+{%- comment -%}
+  "Shop by what you're cooking tonight" baskets.
+  Each basket block holds up to 6 real products (product_list setting).
+  The price shown is the live sum of those products; "Add the basket"
+  adds every available product in one /cart/add.js request.
+{%- endcomment -%}
+<section class="hsd hsd-section" aria-labelledby="HsKitsTitle-{{ section.id }}">
+  <div class="hsd-container">
+    <div class="hsd-section-head hsd-section-head--center">
+      <div class="hsd-section-head__text" style="justify-items:center">
+        {%- if section.settings.eyebrow != blank -%}<p class="hsd-eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+        <h2 class="hsd-h2" id="HsKitsTitle-{{ section.id }}">{{ section.settings.heading | escape }}{% if section.settings.heading_accent != blank %} <span class="hsd-accent">{{ section.settings.heading_accent | escape }}</span>{% endif %}</h2>
+        {%- if section.settings.text != blank -%}<p class="hsd-lede">{{ section.settings.text | escape }}</p>{%- endif -%}
+      </div>
+    </div>
+
+    <div class="hsd-kits">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign total = 0
+          assign ids = ''
+          for p in block.settings.products
+            assign pv = p.selected_or_first_available_variant
+            if pv.available
+              assign total = total | plus: pv.price
+              assign ids = ids | append: pv.id | append: ','
+            endif
+          endfor
+          assign id_list = ids | split: ','
+          case block.settings.tint
+            when 'gold'
+              assign ink = 'var(--hsd-red)'
+            when 'green'
+              assign ink = 'var(--hsd-green)'
+            else
+              assign ink = 'var(--hsd-cinnamon)'
+          endcase
+        -%}
+        <article class="hsd-kit hsd-tint-{{ block.settings.tint }}" {{ block.shopify_attributes }}>
+          <div class="hsd-kit__top">
+            <span class="hsd-kit__num" style="color: {{ ink }}">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <span class="hsd-kit__count">{{ block.settings.products.count }} ITEMS</span>
+          </div>
+          <h3 class="hsd-h2" style="font-size:30px">{{ block.settings.title | escape }}</h3>
+          {%- if block.settings.blurb != blank -%}<p style="margin:0;font-size:15px;line-height:1.55;color:#3F2E22">{{ block.settings.blurb | escape }}</p>{%- endif -%}
+          <ul class="hsd-kit__items">
+            {%- for p in block.settings.products -%}
+              <li><span style="color: {{ ink }}">{% render 'hsd-icon', icon: 'check', size: 16, stroke: 2.4 %}</span><a href="{{ p.url }}" style="color:inherit">{{ p.title | escape }}</a></li>
+            {%- else -%}
+              <li>Pick up to 6 products for this basket</li>
+            {%- endfor -%}
+          </ul>
+          <div class="hsd-kit__foot">
+            <span class="hsd-kit__price">{% if total > 0 %}{{ total | money }}{% endif %}</span>
+            <button type="button" class="hsd-btn hsd-btn--ink" data-hsd-kit-add="[{{ id_list | join: ',' }}]"{% if id_list.size == 0 %} disabled{% endif %}>Add the basket</button>
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HSD Cook tonight",
+  "class": "hsd-section-kits",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Not sure where to start?" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Shop by what you are" },
+    { "type": "text", "id": "heading_accent", "label": "Heading — italic red part", "default": "cooking tonight." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Everything for one meal or one habit, in one basket. Swap anything you already have." }
+  ],
+  "max_blocks": 3,
+  "blocks": [
+    {
+      "type": "kit",
+      "name": "Basket",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Biryani night" },
+        { "type": "textarea", "id": "blurb", "label": "Short description" },
+        { "type": "product_list", "id": "products", "label": "Products", "limit": 6 },
+        { "type": "select", "id": "tint", "label": "Colour", "default": "gold", "options": [
+          { "value": "gold", "label": "Turmeric" }, { "value": "green", "label": "Leaf" }, { "value": "red", "label": "Chilli" } ] }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HSD Cook tonight",
+      "blocks": [
+        { "type": "kit", "settings": { "title": "Biryani night", "blurb": "Long-grain rice, whole spices and ghee for a pot that feeds the whole table.", "tint": "gold" } },
+        { "type": "kit", "settings": { "title": "Morning tea ritual", "blurb": "Slow mornings, done properly. Loose leaf, spice and something sweet.", "tint": "green" } },
+        { "type": "kit", "settings": { "title": "Pantry starter", "blurb": "New kitchen, new city? The everyday basics from our own shelves.", "tint": "red" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,68 @@
+{%- comment -%}
+  Product card used on the home page rows, the wellness shelf and
+  "More on the same shelf". Renders with ONE product object only — no extra
+  queries — so it is safe on collection pages with thousands of products.
+
+  Params:
+    product          required
+    sizes            image `sizes` attribute (optional)
+    show_brand       bool (default true)
+    eager            bool — first row above the fold
+
+  Optional metafield: custom.alt_name (single line text) — second-language
+  name, e.g. "Besan" under "Gram flour". Shown under the title.
+{%- endcomment -%}
+{%- liquid
+  assign sizes = sizes | default: '(min-width: 990px) 25vw, 50vw'
+  assign v = product.selected_or_first_available_variant
+  assign alt_name = product.metafields.custom.alt_name.value
+  assign loading = 'lazy'
+  if eager
+    assign loading = 'eager'
+  endif
+-%}
+<article class="hsd-card">
+  <div class="hsd-card__media">
+    {%- if product.available == false -%}
+      <span class="hsd-card__badge hsd-card__badge--soldout">Sold out</span>
+    {%- elsif v.compare_at_price > v.price -%}
+      <span class="hsd-card__badge">Sale</span>
+    {%- elsif product.tags contains 'new' -%}
+      <span class="hsd-card__badge">New</span>
+    {%- endif -%}
+    {%- if product.featured_media -%}
+      {{ product.featured_media | image_url: width: 800 | image_tag:
+        widths: '240, 360, 480, 640, 800',
+        sizes: sizes,
+        loading: loading,
+        alt: product.featured_media.alt | default: product.title
+      }}
+    {%- else -%}
+      {{ 'product-apparel-1' | placeholder_svg_tag: 'hsd-card__placeholder' }}
+    {%- endif -%}
+  </div>
+
+  {%- unless show_brand == false -%}
+    <span class="hsd-card__brand">{{ product.vendor | escape }}</span>
+  {%- endunless -%}
+  <h3 class="hsd-card__title"><a href="{{ product.url }}">{{ product.title | escape }}</a></h3>
+  {%- if alt_name != blank -%}<span class="hsd-card__alt">{{ alt_name | escape }}</span>{%- endif -%}
+
+  <div class="hsd-card__foot">
+    {% render 'hsd-price', product: product %}
+    {%- if product.available -%}
+      {%- if product.has_only_default_variant -%}
+        {%- form 'product', product, class: 'hsd-card__form', data-hsd-quick-add: '' -%}
+          <input type="hidden" name="id" value="{{ v.id }}">
+          <button type="submit" class="hsd-btn hsd-btn--green hsd-card__add" aria-label="Add {{ product.title | escape }} to cart">
+            {% render 'hsd-icon', icon: 'plus', size: 16, stroke: 2.4 %}<span class="hsd-card__add-label">Add</span>
+          </button>
+        {%- endform -%}
+      {%- else -%}
+        <a href="{{ product.url }}" class="hsd-btn hsd-btn--green hsd-card__add" aria-label="Choose size for {{ product.title | escape }}">
+          <span class="hsd-card__add-label">Choose</span>{% render 'hsd-icon', icon: 'arrow', size: 16, stroke: 2.2 %}
+        </a>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</article>

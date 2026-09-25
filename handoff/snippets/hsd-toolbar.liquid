@@ -1,0 +1,57 @@
+{%- comment -%}
+  Result count, active-filter pills, sort select, phone filter button.
+  Params: results, action_url, count, terms
+{%- endcomment -%}
+{%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
+<div class="hsd-toolbar">
+  <p class="hsd-page-head__count" style="margin:0" role="status">{{ count }} {% if count == 1 %}product{% else %}products{% endif %}</p>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button type="button" class="hsd-btn hsd-btn--outline hsd-filter-toggle" style="min-height:44px" aria-controls="HsdFilters" data-hsd-filters-open>Filter</button>
+    <form action="{{ action_url }}" method="get" data-hsd-sort-form>
+      {%- if terms != blank -%}<input type="hidden" name="q" value="{{ terms | escape }}"><input type="hidden" name="type" value="product">{%- endif -%}
+      {%- for filter in results.filters -%}
+        {%- for v in filter.active_values -%}<input type="hidden" name="{{ v.param_name }}" value="{{ v.value | escape }}">{%- endfor -%}
+        {%- if filter.type == 'price_range' -%}
+          {%- if filter.min_value.value -%}<input type="hidden" name="{{ filter.min_value.param_name }}" value="{{ filter.min_value.value | money_without_currency | remove: ',' }}">{%- endif -%}
+          {%- if filter.max_value.value -%}<input type="hidden" name="{{ filter.max_value.param_name }}" value="{{ filter.max_value.value | money_without_currency | remove: ',' }}">{%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+      <label class="hsd-visually-hidden" for="HsdSort">Sort by</label>
+      <select class="hsd-select" id="HsdSort" name="sort_by" data-hsd-autosubmit>
+        {%- for option in results.sort_options -%}
+          <option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name | escape }}</option>
+        {%- endfor -%}
+      </select>
+      <noscript><button type="submit" class="hsd-btn hsd-btn--ink" style="min-height:44px">Sort</button></noscript>
+    </form>
+  </div>
+</div>
+
+{%- liquid
+  assign any_active = false
+  for filter in results.filters
+    if filter.active_values.size > 0
+      assign any_active = true
+    endif
+    if filter.type == 'price_range'
+      if filter.min_value.value or filter.max_value.value
+        assign any_active = true
+      endif
+    endif
+  endfor
+-%}
+{%- if any_active -%}
+  <div class="hsd-active-filters">
+    {%- for filter in results.filters -%}
+      {%- for v in filter.active_values -%}
+        <a href="{{ v.url_to_remove }}" aria-label="Remove filter {{ v.label | escape }}">{{ v.label | escape }} {% render 'hsd-icon', icon: 'close', size: 14, stroke: 2.4 %}</a>
+      {%- endfor -%}
+      {%- if filter.type == 'price_range' -%}
+        {%- if filter.min_value.value or filter.max_value.value -%}
+          <a href="{{ filter.url_to_remove }}">{{ filter.min_value.value | default: 0 | money }} – {{ filter.max_value.value | default: filter.range_max | money }} {% render 'hsd-icon', icon: 'close', size: 14, stroke: 2.4 %}</a>
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+    <a class="hsd-clear" href="{{ action_url }}{% if terms != blank %}?q={{ terms | url_encode }}&type=product{% endif %}">Clear all</a>
+  </div>
+{%- endif -%}

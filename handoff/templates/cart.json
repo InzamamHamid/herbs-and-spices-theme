@@ -1,0 +1,25 @@
+{
+  "sections": {
+    "main": {
+      "type": "hsd-main-cart",
+      "settings": {
+        "free_threshold": 0
+      }
+    },
+    "row": {
+      "type": "hsd-product-row",
+      "settings": {
+        "style": "row",
+        "collection": "new-arrivals",
+        "limit": 8,
+        "eyebrow": "Before you go",
+        "heading": "Just unpacked this week",
+        "link_label": "See everything new"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "row"
+  ]
+}

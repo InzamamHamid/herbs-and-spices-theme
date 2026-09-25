@@ -1,0 +1,64 @@
+{%- assign s = section.settings -%}
+<section id="hsd-story" class="hsd hsd-section hsd-section--cinnamon" aria-labelledby="HsStoryTitle-{{ section.id }}">
+  <div class="hsd-container hsd-story">
+    <div class="hsd-story__media">
+      {%- if s.poster != blank -%}
+        {{ s.poster | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200', sizes: '(min-width: 990px) 50vw, 100vw', alt: '' }}
+      {%- endif -%}
+      {%- if s.video != blank or s.video_url != blank -%}
+        <button type="button" class="hsd-story__play" data-hsd-video aria-label="Play the video">
+          <span>{% render 'hsd-icon', icon: 'play', size: 34 %}</span>
+        </button>
+        <template>
+          {%- if s.video != blank -%}
+            {{ s.video | video_tag: controls: true, playsinline: true, preload: 'none', style: 'position:absolute;inset:0' }}
+          {%- elsif s.video_url.type == 'youtube' -%}
+            <iframe style="position:absolute;inset:0" src="https://www.youtube-nocookie.com/embed/{{ s.video_url.id }}?autoplay=1&rel=0" title="{{ s.heading | escape }}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+          {%- elsif s.video_url.type == 'vimeo' -%}
+            <iframe style="position:absolute;inset:0" src="https://player.vimeo.com/video/{{ s.video_url.id }}?autoplay=1" title="{{ s.heading | escape }}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+          {%- endif -%}
+        </template>
+      {%- elsif s.facebook_url != blank -%}
+        <a class="hsd-story__play" href="{{ s.facebook_url }}" target="_blank" rel="noopener" aria-label="Watch the video on Facebook (opens in a new tab)">
+          <span>{% render 'hsd-icon', icon: 'play', size: 34 %}</span>
+        </a>
+      {%- endif -%}
+      {%- if s.views != blank -%}
+        <span class="hsd-story__views">{% render 'hsd-icon', icon: 'eye', size: 16, stroke: 2 %} {{ s.views | escape }}</span>
+      {%- endif -%}
+    </div>
+
+    <div class="hsd-story__copy">
+      {%- if s.eyebrow != blank -%}<p class="hsd-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+      <h2 class="hsd-h2" id="HsStoryTitle-{{ section.id }}">{{ s.heading | escape }}{% if s.heading_accent != blank %} <span class="hsd-accent">{{ s.heading_accent | escape }}</span>{% endif %}</h2>
+      {%- if s.text != blank -%}<div class="hsd-lede">{{ s.text }}</div>{%- endif -%}
+      {%- if s.quote != blank -%}<p class="hsd-story__quote">“{{ s.quote | escape }}”</p>{%- endif -%}
+      <div class="hsd-hero__actions">
+        {%- if s.button_label != blank -%}<a class="hsd-btn hsd-btn--turmeric" href="{{ s.button_link | default: routes.all_products_collection_url }}">{{ s.button_label | escape }}</a>{%- endif -%}
+        {%- if s.facebook_url != blank -%}<a class="hsd-btn hsd-btn--outline" href="{{ s.facebook_url }}" target="_blank" rel="noopener">{% render 'hsd-icon', icon: 'facebook', size: 18 %}Follow us</a>{%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HSD Video story",
+  "class": "hsd-section-story",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Seen us on Facebook?" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Welcome in." },
+    { "type": "text", "id": "heading_accent", "label": "Heading — italic part", "default": "This is the shop from the video." },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>The same shelves, the same family behind the counter. Most of what you saw is now a click away. A few products stay in-store or by phone only — call us on (229) 513-4377 and we will help.</p>" },
+    { "type": "text", "id": "quote", "label": "Owner quote (handwritten)", "info": "Use the owner's real words" },
+    { "type": "image_picker", "id": "poster", "label": "Video cover image" },
+    { "type": "video", "id": "video", "label": "Video (uploaded to Shopify)", "info": "Best option: fast and works on every phone" },
+    { "type": "video_url", "id": "video_url", "label": "Or YouTube / Vimeo link", "accept": ["youtube", "vimeo"] },
+    { "type": "url", "id": "facebook_url", "label": "Facebook page / video link" },
+    { "type": "text", "id": "views", "label": "Views badge", "default": "547,000 views" },
+    { "type": "text", "id": "button_label", "label": "Button", "default": "Shop what you saw" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "HSD Video story" }]
+}
+{% endschema %}

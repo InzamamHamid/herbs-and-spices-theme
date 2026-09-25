@@ -1,0 +1,6 @@
+node_modules/
+*.log
+.DS_Store
+local-preview/img/**/*.jpg
+local-preview/img/**/*.jpeg
+local-preview/img/**/*.png

@@ -1,0 +1,86 @@
+<section class="hsd hsd-section" aria-labelledby="HsDeptTitle-{{ section.id }}">
+  <div class="hsd-container">
+    <div class="hsd-section-head">
+      <div class="hsd-section-head__text">
+        {%- if section.settings.eyebrow != blank -%}<p class="hsd-eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+        <h2 class="hsd-h2" id="HsDeptTitle-{{ section.id }}">
+          {{ section.settings.heading | escape }}
+          {%- if section.settings.heading_accent != blank %} <span class="hsd-accent hsd-accent--green">{{ section.settings.heading_accent | escape }}</span>{% endif -%}
+        </h2>
+      </div>
+      {%- if section.settings.link_label != blank -%}
+        <a class="hsd-link-underline" href="{{ section.settings.link | default: routes.all_products_collection_url }}">{{ section.settings.link_label | escape }}</a>
+      {%- endif -%}
+    </div>
+
+    <div class="hsd-dept-grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign c = block.settings.collection
+          assign title = block.settings.title | default: c.title
+          assign url = c.url | default: routes.collections_url
+        -%}
+        <a class="hsd-dept hsd-tint-{{ block.settings.tint }}" href="{{ url }}" {{ block.shopify_attributes }}>
+          <span class="hsd-dept__icon" style="color: var(--hsd-{% if block.settings.tint == 'green' %}green{% elsif block.settings.tint == 'red' %}red{% else %}cinnamon{% endif %})">
+            {% render 'hsd-icon', icon: block.settings.icon, size: 30, stroke: 1.6 %}
+          </span>
+          <span>
+            <span class="hsd-dept__name">{{ title | escape }}</span>
+            {%- if block.settings.subtitle != blank -%}
+              <span class="hsd-dept__sub">{{ block.settings.subtitle | escape }} {% render 'hsd-icon', icon: 'arrow', size: 14, stroke: 2.2 %}</span>
+            {%- endif -%}
+          </span>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HSD Departments",
+  "class": "hsd-section-departments",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Walk the aisles" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Everything on the shelves," },
+    { "type": "text", "id": "heading_accent", "label": "Heading — italic green part", "default": "aisle by aisle." },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Shop all products" },
+    { "type": "url", "id": "link", "label": "Link" }
+  ],
+  "max_blocks": 12,
+  "blocks": [
+    {
+      "type": "department",
+      "name": "Department",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "text", "id": "title", "label": "Title", "info": "Leave empty to use the collection title" },
+        { "type": "text", "id": "subtitle", "label": "Subtitle" },
+        { "type": "select", "id": "icon", "label": "Icon", "default": "mortar", "options": [
+          { "value": "mortar", "label": "Spices (mortar)" }, { "value": "sack", "label": "Rice & flour (sack)" },
+          { "value": "capsule", "label": "Wellness (capsule)" }, { "value": "cup", "label": "Tea (cup)" },
+          { "value": "dropper", "label": "Oils (dropper)" }, { "value": "leaf", "label": "Skin & hair (leaf)" },
+          { "value": "jar", "label": "Ghee & condiments (jar)" }, { "value": "pantry", "label": "Pantry (box)" } ] },
+        { "type": "select", "id": "tint", "label": "Tile colour", "default": "cream", "options": [
+          { "value": "red", "label": "Chilli tint" }, { "value": "gold", "label": "Turmeric tint" },
+          { "value": "green", "label": "Leaf tint" }, { "value": "cream", "label": "Kraft" } ] }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HSD Departments",
+      "blocks": [
+        { "type": "department", "settings": { "title": "Herbs & Spices", "subtitle": "Whole, ground and blends", "icon": "mortar", "tint": "red" } },
+        { "type": "department", "settings": { "title": "Rice, Flour & Grains", "subtitle": "Every bag size", "icon": "sack", "tint": "gold" } },
+        { "type": "department", "settings": { "title": "Wellness", "subtitle": "Sealed, as stocked", "icon": "capsule", "tint": "green" } },
+        { "type": "department", "settings": { "title": "Teas & Beverages", "subtitle": "Loose and bagged", "icon": "cup", "tint": "cream" } },
+        { "type": "department", "settings": { "title": "Essential & Carrier Oils", "subtitle": "10 ml upwards", "icon": "dropper", "tint": "cream" } },
+        { "type": "department", "settings": { "title": "Skin, Hair & Body", "subtitle": "Butters, soaps, oils", "icon": "leaf", "tint": "green" } },
+        { "type": "department", "settings": { "title": "Cooking Oils & Ghee", "subtitle": "Kitchen staples", "icon": "jar", "tint": "gold" } },
+        { "type": "department", "settings": { "title": "Pantry & Snacks", "subtitle": "Cupboard basics", "icon": "pantry", "tint": "red" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

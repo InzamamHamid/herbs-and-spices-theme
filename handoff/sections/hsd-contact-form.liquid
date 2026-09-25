@@ -1,0 +1,63 @@
+{%- comment -%} Contact page: Shopify's built-in contact form (emails the store owner). {%- endcomment -%}
+{%- assign s = section.settings -%}
+<div class="hsd">
+  <div class="hsd-container hsd-page-head">
+    <p class="hsd-eyebrow">Contact</p>
+    <h1 class="hsd-h1" style="font-size:clamp(36px,4.4vw,60px)">{{ s.heading | escape }}</h1>
+    {%- if s.text != blank -%}<p class="hsd-lede">{{ s.text | escape }}</p>{%- endif -%}
+  </div>
+  <div class="hsd-container hsd-content-grid">
+    {%- form 'contact', class: 'hsd-form', id: 'HsdContactForm' -%}
+      {%- if form.posted_successfully? -%}
+        <p class="hsd-form-status hsd-form-status--ok" role="status" tabindex="-1" autofocus>Thank you — we got your message and will reply within one business day.</p>
+      {%- elsif form.errors -%}
+        <div class="hsd-form-status hsd-form-status--err" role="alert">Please check: {{ form.errors | default_errors }}</div>
+      {%- endif -%}
+      <div class="hsd-form__row">
+        <label class="hsd-field" for="HsdContactName">Name
+          <input class="hsd-input" id="HsdContactName" name="contact[name]" autocomplete="name" value="{{ form.name }}">
+        </label>
+        <label class="hsd-field" for="HsdContactEmail">Email <span aria-hidden="true">*</span>
+          <input class="hsd-input" id="HsdContactEmail" type="email" name="contact[email]" autocomplete="email" required aria-required="true" value="{{ form.email }}">
+        </label>
+      </div>
+      <label class="hsd-field" for="HsdContactPhone">Phone
+        <input class="hsd-input" id="HsdContactPhone" type="tel" name="contact[phone]" autocomplete="tel" value="{{ form.phone }}">
+      </label>
+      <label class="hsd-field" for="HsdContactOrder">Order number (if it's about an order)
+        <input class="hsd-input" id="HsdContactOrder" name="contact[order]" placeholder="#1001">
+      </label>
+      <label class="hsd-field" for="HsdContactBody">Message <span aria-hidden="true">*</span>
+        <textarea class="hsd-input" id="HsdContactBody" name="contact[body]" required aria-required="true">{{ form.body }}</textarea>
+      </label>
+      <button type="submit" class="hsd-btn hsd-btn--green" style="justify-self:start">Send message {% render 'hsd-icon', icon: 'arrow', size: 18, stroke: 2.2 %}</button>
+      <p class="hsd-small" style="margin:0">If something arrived damaged, a photo helps — reply to our email with it attached.</p>
+    {%- endform -%}
+
+    <aside class="hsd-aside" aria-label="Visit or call">
+      <p class="hsd-eyebrow hsd-eyebrow--red">The shop</p>
+      <address style="font-style:normal;line-height:1.6">{{ s.address | escape | newline_to_br }}</address>
+      <p>{{ s.hours | escape | newline_to_br }}</p>
+      {%- if s.phone != blank -%}<a class="hsd-btn hsd-btn--ink" href="tel:{{ s.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">{% render 'hsd-icon', icon: 'phone', size: 18, stroke: 2 %}{{ s.phone | escape }}</a>{%- endif -%}
+      {%- if s.email != blank -%}<a href="mailto:{{ s.email }}" style="color:var(--hsd-ink);font-weight:600;overflow-wrap:anywhere">{{ s.email | escape }}</a>{%- endif -%}
+      {%- if s.map_url != blank -%}<a class="hsd-link-underline" href="{{ s.map_url }}" target="_blank" rel="noopener">Get directions</a>{%- endif -%}
+    </aside>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "HSD Contact form",
+  "class": "hsd-section-contact",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "We would rather hear from you than have you guess." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Use the form, call the shop, or come and see us." },
+    { "type": "textarea", "id": "address", "label": "Address", "default": "401 E 16th Ave, Suite H\nCordele, GA 31015" },
+    { "type": "textarea", "id": "hours", "label": "Hours", "default": "Open 7 days a week\n10am – 7pm Eastern" },
+    { "type": "text", "id": "phone", "label": "Phone", "default": "(229) 513-4377" },
+    { "type": "text", "id": "email", "label": "Email", "default": "herbsandspicescordele@gmail.com" },
+    { "type": "url", "id": "map_url", "label": "Google Maps link" }
+  ],
+  "enabled_on": { "templates": ["page"] }
+}
+{% endschema %}

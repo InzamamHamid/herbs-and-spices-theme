@@ -1,0 +1,61 @@
+{
+  "sections": {
+    "main": {
+      "type": "hsd-main-page",
+      "settings": {
+        "eyebrow": "Our story",
+        "show_aside": false
+      }
+    },
+    "story": {
+      "type": "hsd-story",
+      "settings": {
+        "eyebrow": "Seen us on Facebook?",
+        "heading": "Welcome in.",
+        "heading_accent": "This is the shop from the video.",
+        "views": "547,000 views",
+        "button_label": "Shop the shelves",
+        "facebook_url": "https://www.facebook.com/profile.php?id=61584709565690"
+      }
+    },
+    "visit": {
+      "type": "hsd-visit-delivery",
+      "blocks": {
+        "r1": {
+          "type": "row",
+          "settings": {
+            "label": "Standard delivery, anywhere in the US",
+            "value": "$20"
+          }
+        },
+        "r2": {
+          "type": "row",
+          "settings": {
+            "label": "Leaves our shop",
+            "value": "Next business day"
+          }
+        },
+        "r3": {
+          "type": "row",
+          "settings": {
+            "label": "Tracking",
+            "value": "Emailed when it ships"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3"
+      ],
+      "settings": {
+        "delivery_link": "/pages/delivery"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "story",
+    "visit"
+  ]
+}

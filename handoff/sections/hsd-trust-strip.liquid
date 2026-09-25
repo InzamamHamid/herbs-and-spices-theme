@@ -1,0 +1,42 @@
+<div class="hsd hsd-trust">
+  <ul class="hsd-container hsd-trust__list">
+    {%- for block in section.blocks -%}
+      <li class="hsd-trust__item" {{ block.shopify_attributes }}>
+        {% render 'hsd-icon', icon: block.settings.icon, size: 26, stroke: 1.6 %}
+        {{ block.settings.text | escape }}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "HSD Trust strip",
+  "class": "hsd-section-trust",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Promise",
+      "settings": [
+        { "type": "select", "id": "icon", "label": "Icon", "default": "box", "options": [
+          { "value": "box", "label": "Sealed box" }, { "value": "label", "label": "Label" },
+          { "value": "truck", "label": "Delivery" }, { "value": "shop", "label": "Shop front" },
+          { "value": "phone", "label": "Phone" }, { "value": "leaf", "label": "Leaf" } ] },
+        { "type": "text", "id": "text", "label": "Text", "default": "Sealed maker's packaging" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HSD Trust strip",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "box", "text": "Sealed maker's packaging" } },
+        { "type": "item", "settings": { "icon": "label", "text": "Label copied word for word" } },
+        { "type": "item", "settings": { "icon": "truck", "text": "Ships next business day" } },
+        { "type": "item", "settings": { "icon": "shop", "text": "A real shop — visit us in Cordele" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

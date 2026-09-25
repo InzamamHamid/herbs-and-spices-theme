@@ -1,0 +1,39 @@
+{%- comment -%}
+  Generic content page (About, Delivery, Returns, policies-style pages).
+  Body comes from the page's content in Admin → Online Store → Pages.
+  Optional side card with shop details.
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+<div class="hsd">
+  <div class="hsd-container hsd-page-head">
+    {%- if s.eyebrow != blank -%}<p class="hsd-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+    <h1 class="hsd-h1" style="font-size:clamp(36px,4.4vw,60px)">{{ page.title | escape }}</h1>
+  </div>
+  <div class="hsd-container{% if s.show_aside %} hsd-content-grid{% endif %}" style="{% unless s.show_aside %}padding-bottom:var(--hsd-section-y){% endunless %}">
+    <div class="hsd-prose">{{ page.content }}</div>
+    {%- if s.show_aside -%}
+      <aside class="hsd-aside" aria-label="Shop details">
+        <p class="hsd-eyebrow hsd-eyebrow--red">{{ s.aside_heading | escape }}</p>
+        <p>{{ s.aside_text | escape | newline_to_br }}</p>
+        {%- if s.aside_phone != blank -%}
+          <a class="hsd-btn hsd-btn--ink" href="tel:{{ s.aside_phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">{% render 'hsd-icon', icon: 'phone', size: 18, stroke: 2 %}{{ s.aside_phone | escape }}</a>
+        {%- endif -%}
+      </aside>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "HSD Page content",
+  "class": "hsd-section-page",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow" },
+    { "type": "checkbox", "id": "show_aside", "label": "Show shop details card", "default": true },
+    { "type": "text", "id": "aside_heading", "label": "Card heading", "default": "Questions?" },
+    { "type": "textarea", "id": "aside_text", "label": "Card text", "default": "401 E 16th Ave, Suite H\nCordele, GA 31015\nOpen 7 days, 10am – 7pm" },
+    { "type": "text", "id": "aside_phone", "label": "Phone", "default": "(229) 513-4377" }
+  ],
+  "enabled_on": { "templates": ["page"] }
+}
+{% endschema %}

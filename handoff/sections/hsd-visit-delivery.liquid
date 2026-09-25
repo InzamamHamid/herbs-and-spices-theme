@@ -1,0 +1,78 @@
+{%- assign s = section.settings -%}
+<section class="hsd hsd-section" aria-label="Visit the shop and delivery">
+  <div class="hsd-container hsd-visit">
+    <div class="hsd-visit__card">
+      <div class="hsd-visit__body">
+        <p class="hsd-eyebrow hsd-eyebrow--red">{{ s.visit_eyebrow | escape }}</p>
+        <h2 class="hsd-h2" style="font-size:38px">{{ s.visit_heading | escape }}</h2>
+        <address style="font-style:normal;line-height:1.6">{{ s.address | escape | newline_to_br }}</address>
+        {%- if s.hours != blank -%}<p>{{ s.hours | escape | newline_to_br }}</p>{%- endif -%}
+        {%- if s.phone != blank -%}<a href="tel:{{ s.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}" style="font-weight:700;color:var(--hsd-ink)">{{ s.phone | escape }}</a>{%- endif -%}
+        {%- if s.map_url != blank -%}<a class="hsd-btn hsd-btn--ink" style="justify-self:start" href="{{ s.map_url }}" target="_blank" rel="noopener">Get directions</a>{%- endif -%}
+      </div>
+      <div class="hsd-visit__map">
+        {%- if s.map_image != blank -%}
+          {{ s.map_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: 'Map to the shop' }}
+        {%- else -%}
+          <svg viewBox="0 0 300 380" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path d="M-10 90 L320 70" stroke="#FFFDF7" stroke-width="14"/><path d="M-10 250 L320 270" stroke="#FFFDF7" stroke-width="18"/>
+            <path d="M120 -10 L100 400" stroke="#FFFDF7" stroke-width="12"/><path d="M230 -10 L250 400" stroke="#FFFDF7" stroke-width="8"/>
+            <path d="M-10 170 C 80 150, 200 200, 320 160" stroke="#FFFDF7" stroke-width="6" fill="none"/>
+            <rect x="140" y="110" width="70" height="44" rx="6" fill="#DCE8D2"/><rect x="20" y="280" width="60" height="70" rx="6" fill="#DCE8D2"/>
+            <circle cx="175" cy="205" r="34" fill="#B8321F" opacity=".18"/>
+            <path d="M175 215s-18-16-18-30a18 18 0 0 1 36 0c0 14-18 30-18 30z" fill="#B8321F"/><circle cx="175" cy="185" r="7" fill="#FFFDF7"/>
+          </svg>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="hsd-delivery">
+      <p class="hsd-eyebrow">{{ s.delivery_eyebrow | escape }}</p>
+      <h2 class="hsd-h2" style="font-size:38px">{{ s.delivery_heading | escape }}</h2>
+      <dl class="hsd-delivery__rows">
+        {%- for block in section.blocks -%}
+          <div class="hsd-delivery__row" {{ block.shopify_attributes }}><dt>{{ block.settings.label | escape }}</dt><dd>{{ block.settings.value | escape }}</dd></div>
+        {%- endfor -%}
+      </dl>
+      {%- if s.delivery_link != blank -%}<a class="hsd-link-underline" href="{{ s.delivery_link }}">{{ s.delivery_link_label | escape }}</a>{%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HSD Visit & delivery",
+  "class": "hsd-section-visit",
+  "settings": [
+    { "type": "header", "content": "Visit" },
+    { "type": "text", "id": "visit_eyebrow", "label": "Eyebrow", "default": "Visit the shop" },
+    { "type": "text", "id": "visit_heading", "label": "Heading", "default": "Come and say hello." },
+    { "type": "textarea", "id": "address", "label": "Address", "default": "401 E 16th Ave, Suite H\nCordele, GA 31015" },
+    { "type": "textarea", "id": "hours", "label": "Opening hours", "default": "Open 7 days\n10am – 7pm Eastern" },
+    { "type": "text", "id": "phone", "label": "Phone", "default": "(229) 513-4377" },
+    { "type": "url", "id": "map_url", "label": "Google Maps link" },
+    { "type": "image_picker", "id": "map_image", "label": "Map / shop-front image", "info": "Optional. Illustrated map shows when empty." },
+    { "type": "header", "content": "Delivery" },
+    { "type": "text", "id": "delivery_eyebrow", "label": "Eyebrow", "default": "Delivery, plainly" },
+    { "type": "text", "id": "delivery_heading", "label": "Heading", "default": "One price. No surprises." },
+    { "type": "text", "id": "delivery_link_label", "label": "Link label", "default": "Delivery and returns in full" },
+    { "type": "url", "id": "delivery_link", "label": "Link" }
+  ],
+  "max_blocks": 5,
+  "blocks": [
+    { "type": "row", "name": "Delivery row", "settings": [
+      { "type": "text", "id": "label", "label": "Label", "default": "Standard delivery, anywhere in the US" },
+      { "type": "text", "id": "value", "label": "Value", "default": "$20" } ] }
+  ],
+  "presets": [
+    {
+      "name": "HSD Visit & delivery",
+      "blocks": [
+        { "type": "row", "settings": { "label": "Standard delivery, anywhere in the US", "value": "$20" } },
+        { "type": "row", "settings": { "label": "Leaves our shop", "value": "Next business day" } },
+        { "type": "row", "settings": { "label": "Tracking", "value": "Emailed when it ships" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

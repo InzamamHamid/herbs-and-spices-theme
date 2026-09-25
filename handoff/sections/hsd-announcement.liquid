@@ -1,0 +1,38 @@
+<div class="hsd hsd-announce" role="region" aria-label="Announcements">
+  <ul class="hsd-announce__list">
+    {%- for block in section.blocks -%}
+      <li {{ block.shopify_attributes }}>
+        {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}">{{ block.settings.text | escape }}</a>{%- else -%}{{ block.settings.text | escape }}{%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "HSD Announcement bar",
+  "class": "hsd-section-announcement",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Ships next business day from Cordele, GA" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "HSD Announcement bar",
+      "blocks": [
+        { "type": "message", "settings": { "text": "Ships next business day from Cordele, GA" } },
+        { "type": "message", "settings": { "text": "Sealed in the maker's own packaging" } },
+        { "type": "message", "settings": { "text": "Questions? Call (229) 513-4377" } }
+      ]
+    }
+  ],
+  "enabled_on": { "groups": ["header"] }
+}
+{% endschema %}

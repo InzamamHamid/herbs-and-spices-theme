@@ -1,0 +1,23 @@
+{%- comment -%}
+  Numbered pagination. Use inside a {% paginate %} block:
+    {% render 'hsd-pagination', paginate: paginate %}
+{%- endcomment -%}
+{%- if paginate.pages > 1 -%}
+  <nav class="hsd-pagination" aria-label="Pagination">
+    {%- if paginate.previous -%}
+      <a href="{{ paginate.previous.url }}" aria-label="Previous page">{% render 'hsd-icon', icon: 'arrow-left', size: 18, stroke: 2.2 %}</a>
+    {%- endif -%}
+    {%- for part in paginate.parts -%}
+      {%- if part.is_link -%}
+        <a href="{{ part.url }}" aria-label="Page {{ part.title }}">{{ part.title }}</a>
+      {%- elsif part.title == paginate.current_page -%}
+        <span aria-current="page">{{ part.title }}</span>
+      {%- else -%}
+        <span aria-hidden="true">{{ part.title }}</span>
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if paginate.next -%}
+      <a href="{{ paginate.next.url }}" aria-label="Next page">{% render 'hsd-icon', icon: 'arrow', size: 18, stroke: 2.2 %}</a>
+    {%- endif -%}
+  </nav>
+{%- endif -%}

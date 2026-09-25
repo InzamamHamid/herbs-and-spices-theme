@@ -1,0 +1,220 @@
+{%- comment -%}
+  Product page — gallery + buy box.
+  Data sources (all optional; anything empty is simply not shown):
+    product.metafields.custom.alt_name                  single line  — second-language name
+    product.metafields.custom.net_content (+ _unit)      number + text — "16 fl oz" chip
+    product.metafields.custom.country_of_origin          single line  — "Made in …" chip
+    product.metafields.custom.dshea_disclaimer_required  boolean      — FDA supplement disclaimer
+    product.metafields.custom.ga_tax_class               "food" | "supplement" — no-returns line
+    product.metafields.custom.state_restrictions         single/multi line — shipping restriction notice
+  Unit prices come from Shopify's own unit-price fields on each variant.
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign current_variant = product.selected_or_first_available_variant
+  assign mf = product.metafields.custom
+  assign is_supplement = false
+  if mf.ga_tax_class.value == 'supplement'
+    assign is_supplement = true
+  endif
+  assign crumb_collection = collection | default: product.collections.first
+
+  assign best_unit = 0
+  assign best_id = 0
+  if product.variants.size > 1
+    for v in product.variants
+      if v.unit_price_measurement and v.available
+        if best_unit == 0 or v.unit_price < best_unit
+          assign best_unit = v.unit_price
+          assign best_id = v.id
+        endif
+      endif
+    endfor
+  endif
+-%}
+
+<div class="hsd" data-hsd-pdp>
+  <nav class="hsd-container hsd-breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{{ routes.root_url }}">Home</a></li>
+      {%- if crumb_collection -%}<li><a href="{{ crumb_collection.url }}">{{ crumb_collection.title | escape }}</a></li>{%- endif -%}
+      <li><span aria-current="page">{{ product.title | escape }}</span></li>
+    </ol>
+  </nav>
+
+  <div class="hsd-container hsd-pdp">
+    {%- comment -%} ---------- Gallery ---------- {%- endcomment -%}
+    <div class="hsd-gallery">
+      {%- if product.media.size > 1 -%}
+        <ul class="hsd-gallery__thumbs" role="list">
+          {%- for media in product.media limit: 8 -%}
+            <li>
+              <button type="button" class="hsd-gallery__thumb" data-hsd-thumb="{{ media.id }}" aria-current="{% if current_variant.featured_media %}{% if media.id == current_variant.featured_media.id %}true{% else %}false{% endif %}{% elsif forloop.first %}true{% else %}false{% endif %}" aria-label="Show image {{ forloop.index }}{% if media.alt != blank %}: {{ media.alt | escape }}{% endif %}">
+                {{ media.preview_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: '' }}
+              </button>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      <div>
+        <div class="hsd-gallery__main">
+          <span class="hsd-gallery__tag" data-hsd-gallery-tag>{{ product.featured_media.alt | default: 'Front of pack' | escape }}</span>
+          {%- for media in product.media -%}
+            {%- liquid
+              assign active = false
+              if current_variant.featured_media
+                if media.id == current_variant.featured_media.id
+                  assign active = true
+                endif
+              elsif forloop.first
+                assign active = true
+              endif
+              assign loading = 'lazy'
+              if forloop.first
+                assign loading = 'eager'
+              endif
+            -%}
+            <div class="hsd-gallery__slide{% if active %} is-active{% endif %}" data-hsd-slide="{{ media.id }}" data-label="{{ media.alt | escape }}">
+              {%- case media.media_type -%}
+                {%- when 'image' -%}
+                  <a href="{{ media | image_url: width: 2400 }}" target="_blank" rel="noopener" aria-label="Open larger image{% if media.alt != blank %}: {{ media.alt | escape }}{% endif %}">
+                    {{ media | image_url: width: 1400 | image_tag:
+                      widths: '400, 600, 800, 1000, 1400',
+                      sizes: '(min-width: 990px) 45vw, 100vw',
+                      loading: loading,
+                      fetchpriority: 'auto',
+                      alt: media.alt | default: product.title
+                    }}
+                  </a>
+                {%- when 'video' -%}
+                  {{ media | video_tag: controls: true, playsinline: true, preload: 'none' }}
+                {%- when 'external_video' -%}
+                  {{ media | external_video_tag }}
+                {%- else -%}
+                  {{ media | media_tag }}
+              {%- endcase -%}
+            </div>
+          {%- else -%}
+            <div class="hsd-gallery__slide is-active">{{ 'product-1' | placeholder_svg_tag }}</div>
+          {%- endfor -%}
+        </div>
+        {%- if product.media.size > 1 -%}
+          <div class="hsd-gallery__dots" aria-hidden="true">
+            {%- for media in product.media -%}<span data-hsd-dot{% if forloop.first %} class="is-active"{% endif %}></span>{%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} ---------- Buy box ---------- {%- endcomment -%}
+    <div class="hsd-buybox">
+      <div style="display:grid;gap:10px">
+        {%- if product.vendor != blank -%}
+          <a class="hsd-buybox__maker" href="{{ product.vendor | url_for_vendor }}">{{ product.vendor | escape }} · More from this maker</a>
+        {%- endif -%}
+        <h1 class="hsd-h1 hsd-buybox__title">{{ product.title | escape }}</h1>
+        {%- if mf.alt_name.value != blank -%}<p class="hsd-buybox__alt">{{ mf.alt_name.value | escape }}</p>{%- endif -%}
+        {%- if product.description != blank -%}<div class="hsd-buybox__desc">{{ product.description }}</div>{%- endif -%}
+      </div>
+
+      {% render 'hsd-price', product: product, variant: current_variant, always_compare: true %}
+
+      {%- unless product.has_only_default_variant -%}
+        {%- for option in product.options_with_values -%}
+          <fieldset class="hsd-option">
+            <legend>{{ option.name | escape }}</legend>
+            <div class="hsd-option__list">
+              {%- for value in option.values -%}
+                {%- liquid
+                  assign opt_key = 'option' | append: option.position
+                  assign match = product.variants | where: opt_key, value | first
+                  assign input_id = section.id | append: '-' | append: option.position | append: '-' | append: forloop.index
+                -%}
+                <div>
+                  <input class="hsd-option__input{% unless match.available %} is-unavailable{% endunless %}" type="radio" id="{{ input_id }}" name="{{ option.name | escape }}" value="{{ value | escape }}" data-hsd-option {% if option.selected_value == value %}checked{% endif %}>
+                  <label class="hsd-option__label" for="{{ input_id }}">
+                    <strong>{{ value | escape }}</strong>
+                    {%- if product.options.size == 1 and match -%}
+                      <span>{{ match.price | money }}{% if match.unit_price_measurement %} · {{ match.unit_price | money }}/{{ match.unit_price_measurement.reference_unit }}{% endif %}{% unless match.available %} · Sold out{% endunless %}</span>
+                      {%- if match.id == best_id and s.show_best_value -%}<span class="hsd-option__tag">BETTER VALUE</span>{%- endif -%}
+                    {%- endif -%}
+                  </label>
+                </div>
+              {%- endfor -%}
+            </div>
+          </fieldset>
+        {%- endfor -%}
+      {%- endunless -%}
+
+      {%- if mf.state_restrictions.value != blank -%}
+        <p class="hsd-restrict">{{ s.restriction_prefix | escape }} {{ mf.state_restrictions.value | escape }}</p>
+      {%- endif -%}
+
+      {%- form 'product', product, data-hsd-product-form: '', novalidate: 'novalidate' -%}
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+        <div class="hsd-buy-row">
+          <div class="hsd-qty" data-hsd-qty>
+            <button type="button" data-step="down" aria-label="Decrease quantity">−</button>
+            <label for="HsQty-{{ section.id }}" class="hsd-visually-hidden">Quantity</label>
+            <input id="HsQty-{{ section.id }}" type="number" name="quantity" value="1" min="1" max="99" inputmode="numeric">
+            <button type="button" data-step="up" aria-label="Increase quantity">+</button>
+          </div>
+          <button type="submit" class="hsd-btn hsd-btn--green" data-hsd-add {% unless current_variant.available %}disabled{% endunless %}>
+            {% render 'hsd-icon', icon: 'bag', size: 20 %}
+            <span data-hsd-add-label>{% if current_variant.available %}Add to cart · {{ current_variant.price | money }}{% else %}Sold out{% endif %}</span>
+          </button>
+        </div>
+        <p class="hsd-form-error" role="alert" data-hsd-form-error hidden></p>
+        {%- if s.show_dynamic_checkout -%}<div style="margin-top:12px">{{ form | payment_button }}</div>{%- endif -%}
+      {%- endform -%}
+
+      <ul class="hsd-infobox">
+        {%- if s.shipping_line != blank -%}<li>{% render 'hsd-icon', icon: 'truck', size: 24, stroke: 1.6 %}<div>{{ s.shipping_line }}</div></li>{%- endif -%}
+        {%- if s.sealed_line != blank -%}<li>{% render 'hsd-icon', icon: 'box', size: 24, stroke: 1.6 %}<div>{{ s.sealed_line }}</div></li>{%- endif -%}
+        {%- if is_supplement and s.returns_line != blank -%}<li style="color:var(--hsd-ink-soft)"><span style="color:var(--hsd-cinnamon)">{% render 'hsd-icon', icon: 'return', size: 24, stroke: 1.6 %}</span><div>{{ s.returns_line }}</div></li>{%- endif -%}
+      </ul>
+
+      {%- liquid
+        assign net = mf.net_content.value
+        assign origin = mf.country_of_origin.value
+      -%}
+      {%- if net != blank or origin != blank or product.type != blank -%}
+        <ul class="hsd-facts">
+          {%- if net != blank -%}<li>{{ net }} {{ mf.net_content_unit.value | escape }}</li>{%- endif -%}
+          {%- if product.type != blank -%}<li>{{ product.type | escape }}</li>{%- endif -%}
+          {%- if origin != blank -%}<li>Product of {{ origin | escape }}</li>{%- endif -%}
+        </ul>
+      {%- endif -%}
+
+      {%- if mf.dshea_disclaimer_required.value == true -%}
+        <p class="hsd-disclaimer">*These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <script type="application/json" data-hsd-variants>{{ product.variants | json }}</script>
+</div>
+
+{%- comment -%} Phone: add-to-cart bar pinned to the bottom once the main button scrolls away {%- endcomment -%}
+<div class="hsd hsd-sticky-atc" data-hsd-sticky-atc>
+  <span class="hsd-sticky-atc__price" data-hsd-sticky-price>{{ current_variant.price | money }}</span>
+  <button type="button" class="hsd-btn hsd-btn--green" {% unless current_variant.available %}disabled{% endunless %}>Add to cart</button>
+</div>
+
+<script type="application/ld+json">{{ product | structured_data }}</script>
+
+{% schema %}
+{
+  "name": "HSD Product — buy box",
+  "class": "hsd-section-main-product",
+  "settings": [
+    { "type": "richtext", "id": "shipping_line", "label": "Delivery line", "default": "<p><strong>Ships next business day</strong> from our shop in Cordele, GA. $20 flat delivery anywhere in the US.</p>" },
+    { "type": "richtext", "id": "sealed_line", "label": "Packaging line", "default": "<p><strong>Sealed by the maker.</strong> Label copied word for word below.</p>" },
+    { "type": "richtext", "id": "returns_line", "label": "Supplement returns line", "info": "Only shown when custom.ga_tax_class = supplement", "default": "<p>Supplements can't be returned once shipped. Damaged or wrong item? <a href=\"/pages/returns\">We put it right.</a></p>" },
+    { "type": "text", "id": "restriction_prefix", "label": "State restriction prefix", "default": "We can't ship this item to:" },
+    { "type": "checkbox", "id": "show_best_value", "label": "Tag the size with the lowest unit price as \"Better value\"", "default": true },
+    { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show Buy-it-now button", "default": false }
+  ]
+}
+{% endschema %}

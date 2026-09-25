@@ -1,0 +1,86 @@
+{%- comment -%}
+  Search results. Products get the same filters + sort as collections;
+  pages and recipes are listed underneath. Paginated, so it scales.
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+<div class="hsd">
+  <div class="hsd-container hsd-page-head">
+    <p class="hsd-eyebrow">Search the shelves</p>
+    <h1 class="hsd-h1" style="font-size:clamp(34px,4vw,54px)">
+      {%- if search.performed -%}Results for “{{ search.terms | escape }}”{%- else -%}What are you looking for?{%- endif -%}
+    </h1>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="hsd-search hsd-search--page">
+      {% render 'hsd-icon', icon: 'search', size: 20 %}
+      <label for="HsdSearchPage" class="hsd-visually-hidden">Search</label>
+      <input id="HsdSearchPage" type="search" name="q" value="{{ search.terms | escape }}" placeholder="Try &quot;turmeric&quot;, &quot;basmati&quot; or a brand" autocomplete="off">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" class="hsd-btn hsd-btn--green">Search</button>
+    </form>
+  </div>
+
+  {%- if search.performed -%}
+    {%- paginate search.results by s.per_page -%}
+      {%- liquid
+        assign products = search.results | where: 'object_type', 'product'
+        assign others = search.results | where: 'object_type', 'page'
+        assign articles = search.results | where: 'object_type', 'article'
+      -%}
+      <div class="hsd-container hsd-plp">
+        {%- if search.filters.size > 0 -%}
+          {% render 'hsd-filters', results: search, action_url: routes.search_url, terms: search.terms %}
+        {%- endif -%}
+        <div{% if search.filters.size == 0 %} style="grid-column:1/-1"{% endif %}>
+          {% render 'hsd-toolbar', results: search, action_url: routes.search_url, count: search.results_count, terms: search.terms %}
+          {%- if products.size > 0 -%}
+            <ul class="hsd-grid" style="--hsd-cols: 3" role="list">
+              {%- for product in products -%}
+                <li>{% render 'hsd-product-card', product: product, sizes: '(min-width: 990px) 22vw, 50vw' %}</li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          {%- if others.size > 0 or articles.size > 0 -%}
+            <h2 class="hsd-h3" style="margin:40px 0 16px">Pages &amp; recipes</h2>
+            <ul class="hsd-result-list" role="list">
+              {%- for item in others -%}<li><a href="{{ item.url }}"><small>Page</small>{{ item.title | escape }}</a></li>{%- endfor -%}
+              {%- for item in articles -%}<li><a href="{{ item.url }}"><small>Recipe &amp; tip</small>{{ item.title | escape }}</a></li>{%- endfor -%}
+            </ul>
+          {%- endif -%}
+
+          {%- if search.results_count == 0 -%}
+            <div class="hsd-empty">
+              <h2 class="hsd-h3">We couldn't find “{{ search.terms | escape }}” online.</h2>
+              <p class="hsd-lede" style="margin:0">Try a shorter word or another spelling (e.g. “besan” or “gram flour”). Many products are in the shop before they're online — call (229) 513-4377.</p>
+              <a class="hsd-btn hsd-btn--ink" href="{{ routes.collections_url }}">Browse the aisles</a>
+            </div>
+          {%- endif -%}
+          {% render 'hsd-pagination', paginate: paginate %}
+        </div>
+      </div>
+    {%- endpaginate -%}
+  {%- else -%}
+    <div class="hsd-container" style="padding-bottom:var(--hsd-section-y)">
+      <div class="hsd-chips" style="padding-left:0">
+        <span class="hsd-small">Popular:</span>
+        {%- assign popular = s.popular | split: ',' -%}
+        {%- for term in popular -%}
+          {%- assign t = term | strip -%}
+          <a class="hsd-chip" href="{{ routes.search_url }}?q={{ t | url_encode }}&type=product">{{ t | escape }}</a>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "HSD Search results",
+  "class": "hsd-section-search",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Results per page", "min": 12, "max": 48, "step": 4, "default": 24 },
+    { "type": "text", "id": "popular", "label": "Popular searches (comma separated)", "default": "Turmeric, Basmati, Soursop, Black seed, Ghee, Chai" }
+  ],
+  "enabled_on": { "templates": ["search"] }
+}
+{% endschema %}

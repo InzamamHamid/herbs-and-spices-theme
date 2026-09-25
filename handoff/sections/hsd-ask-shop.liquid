@@ -1,0 +1,31 @@
+{%- assign s = section.settings -%}
+<section class="hsd hsd-section hsd-section--cinnamon" style="padding-block:56px">
+  <div class="hsd-container hsd-ask">
+    <div>
+      <h2 class="hsd-h2" style="font-size:clamp(24px,2.4vw,34px)">{{ s.heading | escape }}</h2>
+      {%- if s.text != blank -%}<p>{{ s.text | escape }}</p>{%- endif -%}
+    </div>
+    <div class="hsd-ask__actions">
+      {%- if s.phone != blank -%}
+        <a class="hsd-btn hsd-btn--turmeric" href="tel:{{ s.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">{% render 'hsd-icon', icon: 'phone', size: 18, stroke: 2 %}{{ s.phone | escape }}</a>
+      {%- endif -%}
+      {%- if s.message_url != blank -%}
+        <a class="hsd-btn hsd-btn--outline" href="{{ s.message_url }}" target="_blank" rel="noopener">{% render 'hsd-icon', icon: 'facebook', size: 18 %}Message us</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HSD Ask the shop",
+  "class": "hsd-section-ask",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Can't read something on the label?" },
+    { "type": "text", "id": "text", "label": "Text", "default": "Call the shop and we will read it out for you, straight from the bottle on our shelf." },
+    { "type": "text", "id": "phone", "label": "Phone", "default": "(229) 513-4377" },
+    { "type": "url", "id": "message_url", "label": "Messenger / Facebook link" }
+  ],
+  "presets": [{ "name": "HSD Ask the shop" }]
+}
+{% endschema %}

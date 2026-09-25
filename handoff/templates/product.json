@@ -1,0 +1,30 @@
+{
+  "sections": {
+    "main": {
+      "type": "hsd-main-product",
+      "settings": {
+        "show_best_value": true,
+        "show_dynamic_checkout": false
+      }
+    },
+    "label": {
+      "type": "hsd-product-label",
+      "settings": {}
+    },
+    "ask": {
+      "type": "hsd-ask-shop",
+      "settings": {
+        "message_url": "https://www.facebook.com/profile.php?id=61584709565690"
+      }
+    },
+    "related": {
+      "type": "hsd-related-products",
+      "settings": { "limit": 4, "intent": "related" }
+    },
+    "reviews": {
+      "type": "hsd-reviews",
+      "settings": {}
+    }
+  },
+  "order": ["main", "label", "ask", "related", "reviews"]
+}

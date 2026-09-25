@@ -1,0 +1,30 @@
+<div class="hsd hsd-grain">
+  <div class="hsd-container hsd-section hsd-404">
+    <span class="hsd-404__num" aria-hidden="true">404</span>
+    <h1 class="hsd-h2">{{ section.settings.heading | escape }}</h1>
+    <p class="hsd-lede">{{ section.settings.text | escape }}</p>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="hsd-search" style="width:min(560px,100%)">
+      {% render 'hsd-icon', icon: 'search', size: 20 %}
+      <label for="Hsd404Search" class="hsd-visually-hidden">Search</label>
+      <input id="Hsd404Search" type="search" name="q" placeholder="Search the shelves">
+      <input type="hidden" name="type" value="product">
+      <button type="submit" class="hsd-btn hsd-btn--green">Search</button>
+    </form>
+    <div class="hsd-hero__actions" style="justify-content:center">
+      <a class="hsd-btn hsd-btn--primary" href="{{ routes.root_url }}">Back to the shop</a>
+      <a class="hsd-btn hsd-btn--outline" href="{{ routes.collections_url }}">Browse the aisles</a>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "HSD 404",
+  "class": "hsd-section-404",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "That shelf is empty." },
+    { "type": "text", "id": "text", "label": "Text", "default": "The page may have moved, or the product sold out and came off the site. Try a search, or call (229) 513-4377." }
+  ],
+  "enabled_on": { "templates": ["404"] }
+}
+{% endschema %}

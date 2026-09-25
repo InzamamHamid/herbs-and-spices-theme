@@ -1,0 +1,121 @@
+{%- comment -%}
+  Cart page. Plain form posts (updates[] / checkout) so it works with no JS;
+  JS auto-submits when a quantity changes. Free-delivery progress bar and a
+  supplement no-returns reminder (custom.ga_tax_class = supplement).
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign threshold = s.free_threshold | times: 100
+  assign has_supplement = false
+  for item in cart.items
+    if item.product.metafields.custom.ga_tax_class.value == 'supplement'
+      assign has_supplement = true
+    endif
+  endfor
+-%}
+<div class="hsd">
+  <div class="hsd-container hsd-page-head">
+    <p class="hsd-eyebrow">Your basket</p>
+    <h1 class="hsd-h1" style="font-size:clamp(36px,4.4vw,60px)">{% if cart.item_count > 0 %}Nearly packed.{% else %}Your basket is empty.{% endif %}</h1>
+  </div>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="hsd-container" style="padding-bottom:var(--hsd-section-y)">
+      <div class="hsd-empty">
+        <p class="hsd-lede" style="margin:0">Nothing on the counter yet. Start with the shelves everyone asks about.</p>
+        <a class="hsd-btn hsd-btn--primary" href="{{ routes.all_products_collection_url }}">Shop the shelves {% render 'hsd-icon', icon: 'arrow', size: 18, stroke: 2.2 %}</a>
+      </div>
+    </div>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post" id="HsdCartForm" class="hsd-container hsd-cart" data-hsd-cart-form>
+      <div>
+        <ul class="hsd-cart__lines" role="list">
+          {%- for item in cart.items -%}
+            <li class="hsd-line">
+              <a class="hsd-line__img" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                {%- if item.image -%}{{ item.image | image_url: width: 240 | image_tag: loading: 'lazy', alt: '' }}{%- endif -%}
+              </a>
+              <div>
+                <a class="hsd-line__title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+                <div class="hsd-line__meta">
+                  {{ item.product.vendor | escape }}
+                  {%- unless item.product.has_only_default_variant %} · {{ item.variant.title | escape }}{% endunless %}
+                  · {{ item.final_price | money }} each
+                </div>
+                <div class="hsd-line__controls">
+                  <div class="hsd-qty" data-hsd-line-qty>
+                    <button type="button" data-step="down" aria-label="Decrease quantity of {{ item.product.title | escape }}">−</button>
+                    <label class="hsd-visually-hidden" for="HsdQty-{{ item.key }}">Quantity</label>
+                    <input id="HsdQty-{{ item.key }}" type="number" name="updates[]" value="{{ item.quantity }}" min="0" max="99" inputmode="numeric">
+                    <button type="button" data-step="up" aria-label="Increase quantity of {{ item.product.title | escape }}">+</button>
+                  </div>
+                  <a class="hsd-line__remove" href="{{ item.url_to_remove }}">Remove</a>
+                </div>
+              </div>
+              <div class="hsd-line__total">
+                {%- if item.original_line_price > item.final_line_price -%}<s class="hsd-price__compare">{{ item.original_line_price | money }}</s><br>{%- endif -%}
+                {{ item.final_line_price | money }}
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+        {%- if s.show_note -%}
+          <label class="hsd-field" style="margin-top:24px" for="HsdCartNote">Note for the shop (optional)
+            <textarea class="hsd-input" id="HsdCartNote" name="note" placeholder="Anything we should know when we pack your order?">{{ cart.note }}</textarea>
+          </label>
+        {%- endif -%}
+        <noscript><button type="submit" name="update" class="hsd-btn hsd-btn--outline" style="margin-top:16px">Update basket</button></noscript>
+      </div>
+
+      <aside class="hsd-summary" aria-label="Order summary">
+        {%- if threshold > 0 -%}
+          {%- liquid
+            assign remaining = threshold | minus: cart.total_price
+            assign pct = cart.total_price | times: 100 | divided_by: threshold
+            if pct > 100
+              assign pct = 100
+            endif
+          -%}
+          <div class="hsd-progress">
+            {%- if remaining > 0 -%}
+              <span>You're {{ remaining | money }} away from free delivery</span>
+            {%- else -%}
+              <span>{% render 'hsd-icon', icon: 'check', size: 16, stroke: 2.4 %} Free delivery unlocked</span>
+            {%- endif -%}
+            <div class="hsd-progress__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ pct }}"><span style="width: {{ pct }}%"></span></div>
+          </div>
+        {%- endif -%}
+
+        <div class="hsd-summary__row"><span>Subtotal ({{ cart.item_count }} {% if cart.item_count == 1 %}item{% else %}items{% endif %})</span><span>{{ cart.items_subtotal_price | money }}</span></div>
+        {%- if cart.cart_level_discount_applications.size > 0 -%}
+          {%- for d in cart.cart_level_discount_applications -%}
+            <div class="hsd-summary__row"><span>{{ d.title | escape }}</span><span>−{{ d.total_allocated_amount | money }}</span></div>
+          {%- endfor -%}
+        {%- endif -%}
+        <div class="hsd-summary__row"><span>Delivery</span><span>{{ s.delivery_text | escape }}</span></div>
+        <div class="hsd-summary__row hsd-summary__row--total"><span>Total</span><span>{{ cart.total_price | money }}</span></div>
+
+        {%- if has_supplement and s.supplement_note != blank -%}<p class="hsd-note" style="margin:0">{{ s.supplement_note | escape }}</p>{%- endif -%}
+
+        <button type="submit" name="checkout" class="hsd-btn hsd-btn--green" style="min-height:58px;font-size:17px">{% render 'hsd-icon', icon: 'bag', size: 20 %} Check out securely</button>
+        {%- if additional_checkout_buttons and s.show_express -%}<div>{{ content_for_additional_checkout_buttons }}</div>{%- endif -%}
+        <p class="hsd-small" style="margin:0;text-align:center">Taxes calculated at checkout. Ships next business day from Cordele, GA.</p>
+      </aside>
+    </form>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "HSD Cart",
+  "class": "hsd-section-cart",
+  "settings": [
+    { "type": "number", "id": "free_threshold", "label": "Free delivery over ($)", "info": "0 hides the progress bar. Must match your shipping rates.", "default": 0 },
+    { "type": "text", "id": "delivery_text", "label": "Delivery line", "default": "$20 flat — calculated at checkout" },
+    { "type": "text", "id": "supplement_note", "label": "Supplement reminder", "default": "Your basket includes supplements. These can't be returned once shipped — damaged or wrong items are always put right." },
+    { "type": "checkbox", "id": "show_note", "label": "Show order note", "default": true },
+    { "type": "checkbox", "id": "show_express", "label": "Show express checkout buttons", "default": true }
+  ],
+  "enabled_on": { "templates": ["cart"] }
+}
+{% endschema %}

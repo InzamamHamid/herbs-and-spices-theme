@@ -1,0 +1,22 @@
+{%- comment -%}
+  Store logo. Uses the uploaded logo image when one is set (preferred: the
+  redrawn SVG), otherwise falls back to the typed wordmark.
+  Params: logo (image, optional), width (px), dark (bool), tag ('div' | 'h1')
+{%- endcomment -%}
+{%- liquid
+  assign width = width | default: 220
+  assign tag = tag | default: 'div'
+-%}
+<{{ tag }} class="hsd-logo-wrap" style="margin:0">
+  <a href="{{ routes.root_url }}" class="hsd-logo{% if dark %} hsd-logo--dark{% endif %}">
+    {%- if logo != blank -%}
+      {{ logo | image_url: width: width | image_tag: width: width, widths: '', alt: shop.name, loading: 'eager', fetchpriority: 'high' }}
+    {%- else -%}
+      <span class="hsd-logo__word">
+        <span class="hsd-logo__herbs">Herbs</span><span class="hsd-logo__amp">&amp;</span><span class="hsd-logo__spices">Spices</span>
+      </span>
+      <span class="hsd-logo__sub">INTERNATIONAL GROCERIES</span>
+      <span class="hsd-visually-hidden">{{ shop.name }}</span>
+    {%- endif -%}
+  </a>
+</{{ tag }}>

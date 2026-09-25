@@ -1,0 +1,42 @@
+{%- comment -%}
+  Reviews. Add the review app's block (Judge.me, Shopify Product Reviews, …)
+  inside this section in the theme editor. Until a product has reviews, the
+  honest empty state below shows. Never seed fake reviews.
+  Reads the standard reviews.rating_count metafield that review apps write.
+{%- endcomment -%}
+{%- assign count = product.metafields.reviews.rating_count.value | default: 0 -%}
+<section class="hsd hsd-section" style="padding-top:0">
+  <div class="hsd-container">
+    {%- for block in section.blocks -%}
+      {%- if block.type == '@app' -%}{% render block %}{%- endif -%}
+    {%- endfor -%}
+
+    {%- if count == 0 -%}
+      <div class="hsd-reviews-empty">
+        <div>
+          <p class="hsd-eyebrow hsd-eyebrow--red">Reviews</p>
+          <h2 class="hsd-h2" style="font-size:34px;margin-top:8px">{{ section.settings.empty_heading | escape }}</h2>
+          <p>{{ section.settings.empty_text | escape }}</p>
+        </div>
+        {%- if section.settings.review_link != blank -%}
+          <a class="hsd-btn hsd-btn--ink" href="{{ section.settings.review_link }}">{{ section.settings.button | escape }}</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HSD Product — reviews",
+  "class": "hsd-section-reviews",
+  "settings": [
+    { "type": "text", "id": "empty_heading", "label": "Empty heading", "default": "No reviews yet." },
+    { "type": "text", "id": "empty_text", "label": "Empty text", "default": "Bought this bottle in the shop or online? Tell other customers what you thought of it." },
+    { "type": "text", "id": "button", "label": "Button", "default": "Write the first review" },
+    { "type": "url", "id": "review_link", "label": "Button link", "info": "e.g. #judgeme_product_reviews" }
+  ],
+  "blocks": [{ "type": "@app" }],
+  "enabled_on": { "templates": ["product"] }
+}
+{% endschema %}

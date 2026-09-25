@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "hsd-main-search",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

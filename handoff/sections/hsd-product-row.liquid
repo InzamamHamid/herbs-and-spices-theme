@@ -1,0 +1,106 @@
+{%- comment -%}
+  One section, two looks:
+   - style "row"      → "Just unpacked this week" (white band, scrolling row)
+   - style "wellness" → "The wellness shelf" (sage band, intro column + 4-up grid + FDA note)
+  Always capped by `limit` (max 16) so it never loads a whole 5,000-product collection.
+{%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  assign c = s.collection
+  assign limit = s.limit
+  assign is_wellness = false
+  if s.style == 'wellness'
+    assign is_wellness = true
+  endif
+-%}
+<section id="hsd-row-{{ section.id }}" class="hsd hsd-section {% if is_wellness %}hsd-section--sage{% else %}hsd-section--surface{% endif %}" aria-labelledby="HsRowTitle-{{ section.id }}">
+  <div class="hsd-container{% if is_wellness %} hsd-wellness{% endif %}">
+
+    {%- if is_wellness -%}
+      <div class="hsd-wellness__intro">
+        {%- if s.eyebrow != blank -%}<p class="hsd-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
+        <h2 class="hsd-h2" id="HsRowTitle-{{ section.id }}">{{ s.heading | escape }}{% if s.heading_accent != blank %} <span class="hsd-accent hsd-accent--green">{{ s.heading_accent | escape }}</span>{% endif %}</h2>
+        {%- if s.text != blank -%}<p class="hsd-lede">{{ s.text | escape }}</p>{%- endif -%}
+        {%- assign ticks = s.ticks | newline_to_br | split: '<br />' -%}
+        {%- if s.ticks != blank -%}
+          <ul class="hsd-ticks">
+            {%- for t in ticks -%}{%- assign tt = t | strip -%}{%- if tt != blank -%}<li>{% render 'hsd-icon', icon: 'check', size: 18, stroke: 2.2 %}{{ tt | escape }}</li>{%- endif -%}{%- endfor -%}
+          </ul>
+        {%- endif -%}
+        {%- if s.link_label != blank -%}
+          <a class="hsd-btn hsd-btn--green" style="align-self:flex-start;box-shadow:none" href="{{ s.link | default: c.url }}">{{ s.link_label | escape }} {% render 'hsd-icon', icon: 'arrow', size: 16, stroke: 2.2 %}</a>
+        {%- endif -%}
+      </div>
+      <div style="display:grid;gap:20px">
+        <ul class="hsd-grid" style="--hsd-cols: 4" role="list">
+          {%- for product in c.products limit: limit -%}
+            <li>{% render 'hsd-product-card', product: product, sizes: '(min-width: 990px) 16vw, 50vw' %}</li>
+          {%- else -%}
+            {%- for i in (1..4) -%}<li><div class="hsd-card"><div class="hsd-card__media">{{ 'product-1' | placeholder_svg_tag }}</div><h3 class="hsd-card__title">Choose a collection</h3></div></li>{%- endfor -%}
+          {%- endfor -%}
+        </ul>
+        {%- if s.show_disclaimer -%}
+          <p class="hsd-disclaimer">*These statements have not been evaluated by the Food and Drug Administration. These products are not intended to diagnose, treat, cure, or prevent any disease.</p>
+        {%- endif -%}
+      </div>
+
+    {%- else -%}
+      <div class="hsd-section-head" data-hsd-scroller-head>
+        <div class="hsd-section-head__text">
+          {%- if s.eyebrow != blank -%}<p class="hsd-eyebrow hsd-eyebrow--red">{{ s.eyebrow | escape }}</p>{%- endif -%}
+          <h2 class="hsd-h2" id="HsRowTitle-{{ section.id }}">{{ s.heading | escape }}{% if s.heading_accent != blank %} <span class="hsd-accent">{{ s.heading_accent | escape }}</span>{% endif %}</h2>
+        </div>
+        {%- if s.link_label != blank -%}<a class="hsd-link-underline" href="{{ s.link | default: c.url }}">{{ s.link_label | escape }}</a>{%- endif -%}
+      </div>
+      <div data-hsd-scroller>
+        <ul class="hsd-scroller" role="list">
+          {%- for product in c.products limit: limit -%}
+            <li>{% render 'hsd-product-card', product: product, sizes: '(min-width: 990px) 25vw, 50vw' %}</li>
+          {%- else -%}
+            {%- for i in (1..4) -%}<li><div class="hsd-card"><div class="hsd-card__media">{{ 'product-1' | placeholder_svg_tag }}</div><h3 class="hsd-card__title">Choose a collection</h3></div></li>{%- endfor -%}
+          {%- endfor -%}
+        </ul>
+        {%- if c.products_count > 4 -%}
+          <div class="hsd-scroller-nav" style="justify-content:flex-end;margin-top:20px">
+            <button type="button" data-hsd-prev aria-label="Previous products">{% render 'hsd-icon', icon: 'arrow-left', size: 18, stroke: 2.2 %}</button>
+            <button type="button" data-hsd-next aria-label="Next products">{% render 'hsd-icon', icon: 'arrow', size: 18, stroke: 2.2 %}</button>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HSD Product row",
+  "class": "hsd-section-product-row",
+  "settings": [
+    { "type": "select", "id": "style", "label": "Style", "default": "row", "options": [
+      { "value": "row", "label": "Scrolling row (Just unpacked)" },
+      { "value": "wellness", "label": "Wellness shelf (sage, with intro)" } ] },
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "range", "id": "limit", "label": "Products to show", "min": 4, "max": 16, "step": 1, "default": 8 },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "New on the shelf" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Just unpacked this week" },
+    { "type": "text", "id": "heading_accent", "label": "Heading — italic part" },
+    { "type": "textarea", "id": "text", "label": "Intro text (wellness style)" },
+    { "type": "textarea", "id": "ticks", "label": "Tick list (wellness style)", "info": "One per line" },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "See all" },
+    { "type": "url", "id": "link", "label": "Link", "info": "Defaults to the collection" },
+    { "type": "checkbox", "id": "show_disclaimer", "label": "Show FDA supplement disclaimer", "default": false }
+  ],
+  "presets": [
+    { "name": "HSD Just unpacked", "settings": { "style": "row", "limit": 8 } },
+    {
+      "name": "HSD Wellness shelf",
+      "settings": {
+        "style": "wellness", "limit": 4, "eyebrow": "The wellness shelf", "heading": "Straight off", "heading_accent": "the label.",
+        "text": "Every bottle is sealed as the maker packed it. We copy ingredients and warnings word for word, and we never add health claims of our own.",
+        "ticks": "Full ingredient list on every page\nLabel photos, front and back\nAsk us anything by phone",
+        "link_label": "Browse the wellness shelf", "show_disclaimer": true
+      }
+    }
+  ]
+}
+{% endschema %}

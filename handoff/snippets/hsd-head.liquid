@@ -1,0 +1,21 @@
+{%- comment -%}
+  Render ONCE inside <head> of layout/theme.liquid:
+    {% render 'hsd-head' %}
+  Loads fonts, the design-system CSS and the behaviour JS (deferred).
+{%- endcomment -%}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..800&family=DM+Sans:opsz,wght@9..40,400..700&family=Caveat:wght@600..700&display=swap">
+{{ 'hsd-logo-bookman.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+<style>
+  @font-face {
+    font-family: "HSD Logo";
+    src: url("{{ 'hsd-logo-bookman.woff2' | asset_url }}") format("woff2");
+    font-style: italic;
+    font-weight: 100 900;
+    font-display: swap;
+  }
+</style>
+{{ 'hsd-base.css' | asset_url | stylesheet_tag }}
+<script>window.HSD = { moneyFormat: {{ shop.money_format | json }} };</script>
+<script src="{{ 'hsd-theme.js' | asset_url }}" defer></script>

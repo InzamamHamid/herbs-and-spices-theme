@@ -1,0 +1,53 @@
+{%- comment -%}
+  Storefront filters (Shopify Search & Discovery app) + sort.
+  Plain GET form: works without JavaScript; JS auto-submits on change.
+  Params:
+    results      collection or search object (has .filters, .sort_options, .sort_by)
+    action_url   collection.url or routes.search_url
+    terms        search terms (search page only)
+{%- endcomment -%}
+{%- assign sort_by = results.sort_by | default: results.default_sort_by -%}
+<div class="hsd-filters-wrap" id="HsdFilters" data-hsd-filters-wrap>
+  <form class="hsd-filters" action="{{ action_url }}" method="get" data-hsd-filter-form aria-label="Filter products">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h2 class="hsd-h3" style="margin:0">Filter</h2>
+      <button type="button" class="hsd-icon-btn hsd-filter-toggle" data-hsd-filters-close aria-label="Close filters">{% render 'hsd-icon', icon: 'close', size: 22 %}</button>
+    </div>
+    {%- if terms != blank -%}
+      <input type="hidden" name="q" value="{{ terms | escape }}">
+      <input type="hidden" name="type" value="product">
+    {%- endif -%}
+    <input type="hidden" name="sort_by" value="{{ sort_by }}">
+
+    {%- for filter in results.filters -%}
+      <details class="hsd-filter" {% if forloop.index <= 3 or filter.active_values.size > 0 %}open{% endif %}>
+        <summary>{{ filter.label | escape }}{% if filter.active_values.size > 0 %} ({{ filter.active_values.size }}){% endif %}</summary>
+        {%- case filter.type -%}
+          {%- when 'price_range' -%}
+            <div class="hsd-price-range">
+              <label>From ($)
+                <input class="hsd-input" type="number" inputmode="decimal" min="0" max="{{ filter.range_max | money_without_currency | remove: ',' }}" name="{{ filter.min_value.param_name }}" value="{% if filter.min_value.value %}{{ filter.min_value.value | money_without_currency | remove: ',' }}{% endif %}" placeholder="0">
+              </label>
+              <label>To ($)
+                <input class="hsd-input" type="number" inputmode="decimal" min="0" max="{{ filter.range_max | money_without_currency | remove: ',' }}" name="{{ filter.max_value.param_name }}" value="{% if filter.max_value.value %}{{ filter.max_value.value | money_without_currency | remove: ',' }}{% endif %}" placeholder="{{ filter.range_max | money_without_currency | remove: ',' }}">
+              </label>
+            </div>
+          {%- else -%}
+            <ul class="hsd-filter__list" role="list">
+              {%- for value in filter.values -%}
+                <li>
+                  <label class="hsd-check{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                    <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value | escape }}" {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                    {{ value.label | escape }}
+                    <span class="hsd-check__count">{{ value.count }}</span>
+                  </label>
+                </li>
+              {%- endfor -%}
+            </ul>
+        {%- endcase -%}
+      </details>
+    {%- endfor -%}
+    <noscript><button type="submit" class="hsd-btn hsd-btn--green" style="margin-top:12px">Apply</button></noscript>
+    <button type="submit" class="hsd-btn hsd-btn--green hsd-filter-toggle" style="margin-top:12px;box-shadow:none">Show results</button>
+  </form>
+</div>

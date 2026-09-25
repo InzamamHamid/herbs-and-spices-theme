@@ -1,0 +1,27 @@
+{%- comment -%}
+  Price with compare-at and Shopify unit price ("$1.62 / fl oz").
+  Params: product (required), variant (optional, defaults to selected/first available),
+          always_compare (bool — product page: render the compare slot even when hidden, so JS can show it)
+{%- endcomment -%}
+{%- liquid
+  assign v = variant | default: product.selected_or_first_available_variant
+  assign on_sale = false
+  if v.compare_at_price > v.price
+    assign on_sale = true
+  endif
+-%}
+<div class="hsd-price" data-hsd-price>
+  {%- if product.price_varies and variant == blank -%}
+    <span>From {{ product.price_min | money }}</span>
+  {%- else -%}
+    <span data-hsd-price-current>{{ v.price | money }}</span>
+  {%- endif -%}
+  {%- if on_sale or always_compare -%}
+    <s class="hsd-price__compare" data-hsd-price-compare{% unless on_sale %} hidden{% endunless %}><span class="hsd-visually-hidden">Was</span>{{ v.compare_at_price | money }}</s>
+  {%- endif -%}
+  {%- if v.unit_price_measurement -%}
+    <span class="hsd-price__unit" data-hsd-price-unit>
+      {{- v.unit_price | money }} / {% if v.unit_price_measurement.reference_value != 1 %}{{ v.unit_price_measurement.reference_value }} {% endif %}{{ v.unit_price_measurement.reference_unit -}}
+    </span>
+  {%- endif -%}
+</div>

@@ -1,0 +1,80 @@
+{%- assign menu = section.settings.menu -%}
+<header class="hsd hsd-header{% if section.settings.sticky %} hsd-header--sticky{% endif %}">
+  <div class="hsd-container hsd-header__inner">
+    <button type="button" class="hsd-icon-btn hsd-header__menu-toggle" aria-controls="HsMenuDrawer-{{ section.id }}" aria-expanded="false" aria-label="Open menu" data-hsd-drawer-open>
+      {% render 'hsd-icon', icon: 'menu', size: 22 %}
+    </button>
+
+    {% render 'hsd-logo', logo: section.settings.logo, width: section.settings.logo_width %}
+
+    <nav aria-label="Main">
+      <ul class="hsd-nav">
+        {%- for link in menu.links -%}
+          <li>
+            {%- if link.links.size > 0 -%}
+              <details>
+                <summary{% if link.child_active or link.active %} style="color:var(--hsd-green)"{% endif %}>{{ link.title | escape }}</summary>
+                <div class="hsd-nav__panel">
+                  <a href="{{ link.url }}">All {{ link.title | escape }}</a>
+                  {%- for child in link.links -%}
+                    <a href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>{{ child.title | escape }}</a>
+                  {%- endfor -%}
+                </div>
+              </details>
+            {%- else -%}
+              <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}{% if link.title == section.settings.highlight_title %} style="color:var(--hsd-red);font-weight:600"{% endif %}>{{ link.title | escape }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="hsd-header__actions">
+      <a href="{{ routes.search_url }}" class="hsd-icon-btn" aria-label="Search">{% render 'hsd-icon', icon: 'search', size: 22 %}</a>
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" class="hsd-icon-btn hsd-header__account" aria-label="Account">{% render 'hsd-icon', icon: 'account', size: 22 %}</a>
+      {%- endif -%}
+      <a href="{{ routes.cart_url }}" class="hsd-btn hsd-btn--green hsd-cart-pill" id="hsd-cart-icon" aria-label="Cart, {{ cart.item_count }} items">
+        {% render 'hsd-icon', icon: 'bag', size: 20 %}
+        <span class="hsd-cart-pill__label">Cart</span>
+        <span class="hsd-badge-count" data-hsd-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="hsd hsd-drawer" id="HsMenuDrawer-{{ section.id }}" hidden>
+    <div class="hsd-drawer__scrim" data-hsd-drawer-close></div>
+    <nav class="hsd-drawer__panel" aria-label="Mobile">
+      <button type="button" class="hsd-icon-btn" aria-label="Close menu" data-hsd-drawer-close>{% render 'hsd-icon', icon: 'close', size: 22 %}</button>
+      <form action="{{ routes.search_url }}" method="get" role="search" class="hsd-search" style="margin:8px 0 12px;min-height:52px;box-shadow:none">
+        <label for="HsDrawerSearch" class="hsd-visually-hidden">Search products</label>
+        <input id="HsDrawerSearch" type="search" name="q" placeholder="Search the shelves">
+        <input type="hidden" name="type" value="product">
+      </form>
+      {%- for link in menu.links -%}
+        <a href="{{ link.url }}">{{ link.title | escape }}</a>
+        {%- if link.links.size > 0 -%}
+          <div class="hsd-drawer__sub">
+            {%- for child in link.links -%}<a href="{{ child.url }}">{{ child.title | escape }}</a>{%- endfor -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if shop.customer_accounts_enabled -%}<a href="{{ routes.account_url }}">Account</a>{%- endif -%}
+    </nav>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "HSD Header",
+  "class": "hsd-section-header",
+  "settings": [
+    { "type": "image_picker", "id": "logo", "label": "Logo image", "info": "Upload the redrawn SVG logo. Leave empty to use the typed wordmark." },
+    { "type": "range", "id": "logo_width", "label": "Logo width", "min": 120, "max": 320, "step": 10, "unit": "px", "default": 220 },
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    { "type": "text", "id": "highlight_title", "label": "Highlight this menu item in red", "default": "Offers", "info": "Exact menu title, e.g. Offers" },
+    { "type": "checkbox", "id": "sticky", "label": "Stick to top on scroll", "default": true }
+  ],
+  "enabled_on": { "groups": ["header"] }
+}
+{% endschema %}

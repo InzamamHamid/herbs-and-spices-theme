@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "hsd-404",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

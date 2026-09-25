@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "hsd-main-collection",
+      "settings": {
+        "per_page": 24,
+        "columns": 3
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

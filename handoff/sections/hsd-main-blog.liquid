@@ -1,0 +1,54 @@
+{%- comment -%} Blog listing (Recipes & Tips). Paginated. {%- endcomment -%}
+<div class="hsd">
+  <div class="hsd-container hsd-page-head">
+    <p class="hsd-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    <h1 class="hsd-h1" style="font-size:clamp(36px,4.4vw,60px)">{{ blog.title | escape }}</h1>
+    {%- if section.settings.intro != blank -%}<p class="hsd-lede">{{ section.settings.intro | escape }}</p>{%- endif -%}
+    {%- if blog.all_tags.size > 0 -%}
+      <div class="hsd-tags" style="margin-top:8px">
+        <a class="hsd-chip" href="{{ blog.url }}"{% if current_tags == blank %} style="background:var(--hsd-ink);color:var(--hsd-cream)"{% endif %}>All</a>
+        {%- for tag in blog.all_tags -%}
+          <a class="hsd-chip" href="{{ blog.url }}/tagged/{{ tag | handleize }}"{% if current_tags contains tag %} style="background:var(--hsd-ink);color:var(--hsd-cream)"{% endif %}>{{ tag | escape }}</a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+  <div class="hsd-container" style="padding-bottom:var(--hsd-section-y)">
+    {%- paginate blog.articles by 9 -%}
+      {%- if blog.articles.size > 0 -%}
+        <ul class="hsd-articles" role="list">
+          {%- for article in blog.articles -%}
+            <li>
+              <article class="hsd-article-card">
+                <div class="hsd-article-card__img">
+                  {%- if article.image -%}
+                    {{ article.image | image_url: width: 800 | image_tag: loading: 'lazy', widths: '400, 600, 800', sizes: '(min-width: 990px) 30vw, 100vw', alt: article.image.alt | default: '' }}
+                  {%- endif -%}
+                </div>
+                <div class="hsd-meta"><time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%B %-d, %Y' }}</time></div>
+                <h2><a href="{{ article.url }}">{{ article.title | escape }}</a></h2>
+                <p>{{ article.excerpt_or_content | strip_html | truncatewords: 26 }}</p>
+                <span class="hsd-link-underline" style="justify-self:start">Read more</span>
+              </article>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <div class="hsd-empty"><p class="hsd-lede" style="margin:0">New recipes are on their way.</p></div>
+      {%- endif -%}
+      {% render 'hsd-pagination', paginate: paginate %}
+    {%- endpaginate -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "HSD Blog",
+  "class": "hsd-section-blog",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "From our kitchen" },
+    { "type": "text", "id": "intro", "label": "Intro", "default": "How we cook with what's on our shelves — and how to keep it fresh." }
+  ],
+  "enabled_on": { "templates": ["blog"] }
+}
+{% endschema %}

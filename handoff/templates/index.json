@@ -1,0 +1,109 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hsd-hero",
+      "blocks": {
+        "chip-1": { "type": "chip", "settings": { "label": "Turmeric", "link": "/search?q=turmeric&type=product" } },
+        "chip-2": { "type": "chip", "settings": { "label": "Basmati rice", "link": "/search?q=basmati&type=product" } },
+        "chip-3": { "type": "chip", "settings": { "label": "Soursop", "link": "/search?q=soursop&type=product" } },
+        "chip-4": { "type": "chip", "settings": { "label": "Black seed", "link": "/search?q=black+seed&type=product" } }
+      },
+      "block_order": ["chip-1", "chip-2", "chip-3", "chip-4"],
+      "settings": {
+        "stamp": "Cordele, Georgia · Family shop",
+        "heading": "The shelves from the video,",
+        "heading_accent": "now at your door.",
+        "text": "Spices, rice, teas and wellness from our shop floor in Cordele. Picked, packed and shipped across the US the next business day.",
+        "show_search": true,
+        "button_label": "Shop the shelves",
+        "button_link": "/collections/all",
+        "video_label": "Watch the video",
+        "seal_big": "547K",
+        "seal_small": "Views on Facebook",
+        "polaroid_caption": "Wellness shelf",
+        "note": "fresh off our shelves!"
+      }
+    },
+    "trust": {
+      "type": "hsd-trust-strip",
+      "blocks": {
+        "t1": { "type": "item", "settings": { "icon": "box", "text": "Sealed maker's packaging" } },
+        "t2": { "type": "item", "settings": { "icon": "label", "text": "Label copied word for word" } },
+        "t3": { "type": "item", "settings": { "icon": "truck", "text": "Ships next business day" } },
+        "t4": { "type": "item", "settings": { "icon": "shop", "text": "A real shop — visit us in Cordele" } }
+      },
+      "block_order": ["t1", "t2", "t3", "t4"]
+    },
+    "departments": {
+      "type": "hsd-departments",
+      "blocks": {
+        "d1": { "type": "department", "settings": { "collection": "herbs-spices", "title": "Herbs & Spices", "subtitle": "Whole, ground and blends", "icon": "mortar", "tint": "red" } },
+        "d2": { "type": "department", "settings": { "collection": "rice-flour-grains", "title": "Rice, Flour & Grains", "subtitle": "Every bag size", "icon": "sack", "tint": "gold" } },
+        "d3": { "type": "department", "settings": { "collection": "vitamins-supplements", "title": "Wellness", "subtitle": "Sealed, as stocked", "icon": "capsule", "tint": "green" } },
+        "d4": { "type": "department", "settings": { "collection": "herbal-teas", "title": "Teas & Beverages", "subtitle": "Loose and bagged", "icon": "cup", "tint": "cream" } },
+        "d5": { "type": "department", "settings": { "collection": "essential-oils", "title": "Essential & Carrier Oils", "subtitle": "10 ml upwards", "icon": "dropper", "tint": "cream" } },
+        "d6": { "type": "department", "settings": { "collection": "skin-hair-care", "title": "Skin, Hair & Body", "subtitle": "Butters, soaps, oils", "icon": "leaf", "tint": "green" } },
+        "d7": { "type": "department", "settings": { "collection": "cooking-oils-ghee", "title": "Cooking Oils & Ghee", "subtitle": "Kitchen staples", "icon": "jar", "tint": "gold" } },
+        "d8": { "type": "department", "settings": { "collection": "pantry-packaged", "title": "Pantry & Snacks", "subtitle": "Cupboard basics", "icon": "pantry", "tint": "red" } }
+      },
+      "block_order": ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"]
+    },
+    "just-unpacked": {
+      "type": "hsd-product-row",
+      "settings": {
+        "style": "row",
+        "collection": "new-arrivals",
+        "limit": 8,
+        "eyebrow": "New on the shelf",
+        "heading": "Just unpacked this week",
+        "link_label": "See everything new"
+      }
+    },
+    "story": {
+      "type": "hsd-story",
+      "settings": {
+        "eyebrow": "Seen us on Facebook?",
+        "heading": "Welcome in.",
+        "heading_accent": "This is the shop from the video.",
+        "views": "547,000 views",
+        "button_label": "Shop what you saw",
+        "facebook_url": "https://www.facebook.com/profile.php?id=61584709565690"
+      }
+    },
+    "kits": {
+      "type": "hsd-kits",
+      "blocks": {
+        "k1": { "type": "kit", "settings": { "title": "Biryani night", "blurb": "Long-grain rice, whole spices and ghee for a pot that feeds the whole table.", "tint": "gold" } },
+        "k2": { "type": "kit", "settings": { "title": "Morning tea ritual", "blurb": "Slow mornings, done properly. Loose leaf, spice and something sweet.", "tint": "green" } },
+        "k3": { "type": "kit", "settings": { "title": "Pantry starter", "blurb": "New kitchen, new city? The everyday basics from our own shelves.", "tint": "red" } }
+      },
+      "block_order": ["k1", "k2", "k3"]
+    },
+    "wellness": {
+      "type": "hsd-product-row",
+      "settings": {
+        "style": "wellness",
+        "collection": "vitamins-supplements",
+        "limit": 4,
+        "eyebrow": "The wellness shelf",
+        "heading": "Straight off",
+        "heading_accent": "the label.",
+        "text": "Every bottle is sealed as the maker packed it. We copy ingredients and warnings word for word, and we never add health claims of our own.",
+        "ticks": "Full ingredient list on every page\nLabel photos, front and back\nAsk us anything by phone",
+        "link_label": "Browse the wellness shelf",
+        "show_disclaimer": true
+      }
+    },
+    "visit": {
+      "type": "hsd-visit-delivery",
+      "blocks": {
+        "r1": { "type": "row", "settings": { "label": "Standard delivery, anywhere in the US", "value": "$20" } },
+        "r2": { "type": "row", "settings": { "label": "Leaves our shop", "value": "Next business day" } },
+        "r3": { "type": "row", "settings": { "label": "Tracking", "value": "Emailed when it ships" } }
+      },
+      "block_order": ["r1", "r2", "r3"],
+      "settings": { "delivery_link": "/pages/delivery" }
+    }
+  },
+  "order": ["hero", "trust", "departments", "just-unpacked", "story", "kits", "wellness", "visit"]
+}

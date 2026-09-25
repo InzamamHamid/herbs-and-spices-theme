@@ -1,0 +1,39 @@
+{%- comment -%} All collections ("Shop" / aisles). Paginated for large catalogues. {%- endcomment -%}
+{%- assign tints = 'red,gold,green,cream' | split: ',' -%}
+<div class="hsd">
+  <div class="hsd-container hsd-page-head">
+    <p class="hsd-eyebrow">Walk the aisles</p>
+    <h1 class="hsd-h1" style="font-size:clamp(36px,4.4vw,60px)">{{ section.settings.heading | escape }}</h1>
+  </div>
+  <div class="hsd-container" style="padding-bottom:var(--hsd-section-y)">
+    {%- paginate collections by 24 -%}
+      <ul class="hsd-grid" style="--hsd-cols: 4" role="list">
+        {%- for c in collections -%}
+          {%- assign tint_i = forloop.index0 | modulo: 4 -%}
+          {%- assign tint = tints[tint_i] -%}
+          <li>
+            <a class="hsd-dept hsd-tint-{{ tint }}" href="{{ c.url }}" style="min-height:260px;gap:16px">
+              {%- if c.image -%}
+                <span style="display:block;aspect-ratio:16/10;border-radius:12px;overflow:hidden;border:1.5px solid var(--hsd-ink)">{{ c.image | image_url: width: 500 | image_tag: loading: 'lazy', widths: '250, 500', sizes: '(min-width: 990px) 22vw, 45vw', alt: '', style: 'width:100%;height:100%;object-fit:cover' }}</span>
+              {%- endif -%}
+              <span>
+                <span class="hsd-dept__name">{{ c.title | escape }}</span>
+                <span class="hsd-dept__sub" style="display:inline-flex">{{ c.products_count }} products {% render 'hsd-icon', icon: 'arrow', size: 14, stroke: 2.2 %}</span>
+              </span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+      {% render 'hsd-pagination', paginate: paginate %}
+    {%- endpaginate -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "HSD All collections",
+  "class": "hsd-section-list-collections",
+  "settings": [ { "type": "text", "id": "heading", "label": "Heading", "default": "Every aisle in the shop" } ],
+  "enabled_on": { "templates": ["list-collections"] }
+}
+{% endschema %}

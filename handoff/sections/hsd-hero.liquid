@@ -1,0 +1,140 @@
+{%- liquid
+  assign s = section.settings
+-%}
+<section class="hsd hsd-grain hsd-hero" aria-labelledby="HsHeroTitle-{{ section.id }}">
+  <div class="hsd-container hsd-hero__grid">
+    <div class="hsd-hero__copy">
+      {%- if s.stamp != blank -%}
+        <span class="hsd-stamp">{% render 'hsd-icon', icon: 'pin', size: 14, stroke: 2 %}{{ s.stamp | escape }}</span>
+      {%- endif -%}
+
+      <h1 class="hsd-h1" id="HsHeroTitle-{{ section.id }}">
+        {{ s.heading | escape }}
+        {%- if s.heading_accent != blank %} <span class="hsd-accent">{{ s.heading_accent | escape }}</span>{% endif -%}
+      </h1>
+
+      {%- if s.text != blank -%}<p class="hsd-lede">{{ s.text | escape }}</p>{%- endif -%}
+
+      {%- if s.show_search -%}
+        <div style="width:100%">
+          <form action="{{ routes.search_url }}" method="get" role="search" class="hsd-search">
+            {% render 'hsd-icon', icon: 'search', size: 20 %}
+            <label for="HsHeroSearch-{{ section.id }}" class="hsd-visually-hidden">Search products</label>
+            <input id="HsHeroSearch-{{ section.id }}" type="search" name="q" placeholder="{{ s.search_placeholder | escape }}" autocomplete="off">
+            <input type="hidden" name="type" value="product">
+            <input type="hidden" name="options[prefix]" value="last">
+            <button type="submit" class="hsd-btn hsd-btn--green">Search</button>
+          </form>
+          {%- assign chips = section.blocks | where: 'type', 'chip' -%}
+          {%- if chips.size > 0 -%}
+            <div class="hsd-chips">
+              <span class="hsd-small">Popular:</span>
+              {%- for block in chips -%}
+                <a class="hsd-chip" href="{{ block.settings.link | default: routes.search_url }}" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</a>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="hsd-hero__actions">
+        {%- if s.button_label != blank -%}
+          <a href="{{ s.button_link | default: routes.all_products_collection_url }}" class="hsd-btn hsd-btn--primary">{{ s.button_label | escape }} {% render 'hsd-icon', icon: 'arrow', size: 18, stroke: 2.2 %}</a>
+        {%- endif -%}
+        {%- if s.video_label != blank -%}
+          <a href="{{ s.video_link | default: '#hsd-story' }}" class="hsd-btn hsd-btn--ghost">
+            <span class="hsd-btn__play">{% render 'hsd-icon', icon: 'play', size: 16 %}</span>{{ s.video_label | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="hsd-hero__art">
+      <div class="hsd-arch">
+        <div class="hsd-arch__photo">
+          {%- if s.image != blank -%}
+            {%- assign focal = 'object-position: ' | append: s.image.presentation.focal_point -%}
+            {{ s.image | image_url: width: 1000 | image_tag:
+              widths: '400, 600, 800, 1000',
+              sizes: '(min-width: 990px) 440px, 90vw',
+              loading: 'eager', fetchpriority: 'high',
+              style: focal
+            }}
+          {%- else -%}
+            {{ 'image' | placeholder_svg_tag }}
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- if s.polaroid_image != blank -%}
+        <figure class="hsd-polaroid" style="margin:0">
+          {{ s.polaroid_image | image_url: width: 400 | image_tag: loading: 'lazy', widths: '200, 400', sizes: '190px' }}
+          {%- if s.polaroid_caption != blank -%}<figcaption>{{ s.polaroid_caption | escape }}</figcaption>{%- endif -%}
+        </figure>
+      {%- endif -%}
+
+      {%- if s.seal_big != blank -%}
+        <div class="hsd-seal" role="img" aria-label="{{ s.seal_big | escape }} {{ s.seal_small | escape }}">
+          <span class="hsd-seal__big">{{ s.seal_big | escape }}</span>
+          <span class="hsd-seal__small">{{ s.seal_small | escape }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- if s.note != blank -%}
+        <p class="hsd-note" aria-hidden="true">{{ s.note | escape }}
+          <svg width="120" height="40" viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 30C40 36 78 30 108 10"/><path d="M96 8l12 2-4 11"/></svg>
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "HSD Hero",
+  "class": "hsd-section-hero",
+  "settings": [
+    { "type": "text", "id": "stamp", "label": "Stamp", "default": "Cordele, Georgia · Family shop" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "The shelves from the video," },
+    { "type": "text", "id": "heading_accent", "label": "Heading — italic red part", "default": "now at your door." },
+    { "type": "textarea", "id": "text", "label": "Text", "default": "Spices, rice, teas and wellness from our shop floor in Cordele. Picked, packed and shipped across the US the next business day." },
+    { "type": "header", "content": "Search" },
+    { "type": "checkbox", "id": "show_search", "label": "Show search bar", "default": true },
+    { "type": "text", "id": "search_placeholder", "label": "Search placeholder", "default": "Try \"black seed\", \"basmati\" or \"soursop\"" },
+    { "type": "header", "content": "Buttons" },
+    { "type": "text", "id": "button_label", "label": "Main button", "default": "Shop the shelves" },
+    { "type": "url", "id": "button_link", "label": "Main button link" },
+    { "type": "text", "id": "video_label", "label": "Video link label", "default": "Watch the video" },
+    { "type": "url", "id": "video_link", "label": "Video link", "info": "Leave empty to jump to the story section on this page" },
+    { "type": "header", "content": "Artwork" },
+    { "type": "image_picker", "id": "image", "label": "Arch photo", "info": "Portrait, at least 1000 px wide. Set a focal point in Files." },
+    { "type": "image_picker", "id": "polaroid_image", "label": "Snapshot photo (desktop only)" },
+    { "type": "text", "id": "polaroid_caption", "label": "Snapshot caption", "default": "Wellness shelf" },
+    { "type": "text", "id": "seal_big", "label": "Round stamp — big text", "default": "547K" },
+    { "type": "text", "id": "seal_small", "label": "Round stamp — small text", "default": "Views on Facebook" },
+    { "type": "text", "id": "note", "label": "Handwritten note (desktop only)", "default": "fresh off our shelves!" }
+  ],
+  "blocks": [
+    {
+      "type": "chip",
+      "name": "Popular search",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Turmeric" },
+        { "type": "url", "id": "link", "label": "Link", "info": "Collection or search link, e.g. /search?q=turmeric" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "HSD Hero",
+      "blocks": [
+        { "type": "chip", "settings": { "label": "Turmeric" } },
+        { "type": "chip", "settings": { "label": "Basmati rice" } },
+        { "type": "chip", "settings": { "label": "Soursop" } },
+        { "type": "chip", "settings": { "label": "Black seed" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

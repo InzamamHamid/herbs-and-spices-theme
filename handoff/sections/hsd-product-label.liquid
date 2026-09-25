@@ -1,0 +1,133 @@
+{%- comment -%}
+  "Straight off the label" — tabs on desktop, accordion on phones (same panels).
+  A tab only appears when its metafield has content, so no product ever shows
+  an empty tab.
+
+    custom.ingredients      multi-line text
+    custom.directions       multi-line text
+    custom.warnings         multi-line text   (+ custom.prop65_warning appended if set)
+    custom.facts_text       multi-line text   (optional, typed copy of the facts panel)
+    custom.allergens        list of single-line text
+    custom.label_photographed  date           (optional, "photographed on …")
+
+  Back-label photo: the first product image whose ALT text contains
+  "back label" (case-insensitive). No extra metafield needed.
+{%- endcomment -%}
+{%- assign mf = product.metafields.custom -%}
+{%- capture warnings -%}
+  {{- mf.warnings.value -}}
+  {%- if mf.warnings.value != blank and mf.prop65_warning.value != blank %}
+
+{% endif -%}
+  {{- mf.prop65_warning.value -}}
+{%- endcapture -%}
+{%- liquid
+  assign is_supplement = false
+  if mf.dshea_disclaimer_required.value == true or mf.ga_tax_class.value == 'supplement'
+    assign is_supplement = true
+  endif
+  if is_supplement
+    assign facts_name = 'Supplement facts'
+  else
+    assign facts_name = 'Nutrition facts'
+  endif
+
+  assign allergens = ''
+  if mf.allergens.value != blank
+    assign allergens = mf.allergens.value | join: ', '
+  endif
+
+  assign back_label = nil
+  for media in product.media
+    assign alt_down = media.alt | downcase
+    if alt_down contains 'back label'
+      assign back_label = media
+      break
+    endif
+  endfor
+
+  assign keys = ''
+  if mf.ingredients.value != blank
+    assign keys = keys | append: 'ingredients,'
+  endif
+  if mf.directions.value != blank
+    assign keys = keys | append: 'directions,'
+  endif
+  if warnings != blank
+    assign keys = keys | append: 'warnings,'
+  endif
+  if mf.facts_text.value != blank
+    assign keys = keys | append: 'facts,'
+  endif
+  if allergens != blank
+    assign keys = keys | append: 'allergens,'
+  endif
+  assign tab_keys = keys | split: ','
+-%}
+
+{%- if tab_keys.size > 0 -%}
+<section class="hsd hsd-section hsd-section--surface" aria-labelledby="HsLabelTitle-{{ section.id }}">
+  <div class="hsd-container hsd-label">
+    <div>
+      <p class="hsd-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      <h2 class="hsd-h2" id="HsLabelTitle-{{ section.id }}" style="margin-top:10px">{{ section.settings.heading | escape }} <span class="hsd-accent hsd-accent--green">{{ section.settings.heading_accent | escape }}</span></h2>
+
+      <div class="hsd-tabs__list" role="tablist" aria-label="Label information">
+        {%- for key in tab_keys -%}
+          {%- case key -%}
+            {%- when 'ingredients' -%}{%- assign name = 'Ingredients' -%}
+            {%- when 'directions' -%}{%- assign name = 'How to use' -%}
+            {%- when 'warnings' -%}{%- assign name = 'Warnings' -%}
+            {%- when 'facts' -%}{%- assign name = facts_name -%}
+            {%- when 'allergens' -%}{%- assign name = 'Allergens' -%}
+          {%- endcase -%}
+          <button type="button" class="hsd-tabs__tab" role="tab" id="HsTab-{{ section.id }}-{{ key }}" aria-controls="HsPanel-{{ section.id }}-{{ key }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" data-hsd-tab="{{ key }}">{{ name }}</button>
+        {%- endfor -%}
+      </div>
+
+      {%- for key in tab_keys -%}
+        {%- case key -%}
+          {%- when 'ingredients' -%}{%- assign name = 'Ingredients' -%}{%- assign body = mf.ingredients.value -%}
+          {%- when 'directions' -%}{%- assign name = 'How to use' -%}{%- assign body = mf.directions.value -%}
+          {%- when 'warnings' -%}{%- assign name = 'Warnings' -%}{%- assign body = warnings -%}
+          {%- when 'facts' -%}{%- assign name = facts_name -%}{%- assign body = mf.facts_text.value -%}
+          {%- when 'allergens' -%}{%- assign name = 'Allergens' -%}{%- assign body = 'Contains: ' | append: allergens -%}
+        {%- endcase -%}
+        <button type="button" class="hsd-accordion__btn" aria-controls="HsPanel-{{ section.id }}-{{ key }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" data-hsd-acc="{{ key }}">{{ name }}<span aria-hidden="true">{% if forloop.first %}−{% else %}+{% endif %}</span></button>
+        <div class="hsd-tabs__panel" role="tabpanel" id="HsPanel-{{ section.id }}-{{ key }}" aria-labelledby="HsTab-{{ section.id }}-{{ key }}" data-hsd-panel="{{ key }}"{% unless forloop.first %} hidden{% endunless %}>
+          <h3 class="hsd-h3">{{ name }}</h3>
+          <div class="hsd-tabs__body">{{ body | escape }}</div>
+          {%- if mf.label_photographed.value != blank -%}
+            <span class="hsd-tabs__source">Source: the maker's label, photographed in our shop on {{ mf.label_photographed.value | date: '%B %-d, %Y' }}.</span>
+          {%- else -%}
+            <span class="hsd-tabs__source">Source: the maker's label, copied word for word.</span>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div>
+      {%- if back_label -%}
+        <a class="hsd-label__photo" href="{{ back_label | image_url: width: 2400 }}" target="_blank" rel="noopener" style="display:block" aria-label="Open the back label full size">
+          {{ back_label | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400, 600, 900', sizes: '(min-width: 990px) 35vw, 100vw', alt: back_label.alt }}
+        </a>
+      {%- endif -%}
+      {%- if section.settings.note != blank -%}<p class="hsd-label__note">{{ section.settings.note | escape }}</p>{%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "HSD Product — label",
+  "class": "hsd-section-product-label",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Straight off the label" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "What the maker says," },
+    { "type": "text", "id": "heading_accent", "label": "Heading — italic green part", "default": "word for word." },
+    { "type": "text", "id": "note", "label": "Handwritten note", "default": "If the label changes, we re-photograph it." }
+  ],
+  "enabled_on": { "templates": ["product"] }
+}
+{% endschema %}

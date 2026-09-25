@@ -1,0 +1,65 @@
+{%- comment -%}
+  Collection page. Scales to thousands of products:
+  - {% paginate %} — Shopify only sends one page of products to Liquid
+  - collection.filters — native storefront filtering (Search & Discovery app)
+  - sort via ?sort_by=, filters via ?filter.* — both plain GET, cacheable, SEO-safe
+{%- endcomment -%}
+{%- assign s = section.settings -%}
+<div class="hsd">
+  <div class="hsd-container">
+    <nav class="hsd-breadcrumb" aria-label="Breadcrumb" style="padding-bottom:0">
+      <ol><li><a href="{{ routes.root_url }}">Home</a></li><li><a href="{{ routes.collections_url }}">Shop</a></li><li><span aria-current="page">{{ collection.title | escape }}</span></li></ol>
+    </nav>
+    <header class="hsd-page-head{% if s.show_image and collection.image %} hsd-page-head--banner{% endif %}">
+      <div style="display:grid;gap:12px">
+        <h1 class="hsd-h1" style="font-size:clamp(36px,4.4vw,60px)">{{ collection.title | escape }}</h1>
+        {%- if s.show_description and collection.description != blank -%}<div class="hsd-lede">{{ collection.description }}</div>{%- endif -%}
+      </div>
+      {%- if s.show_image and collection.image -%}
+        <div class="hsd-page-head__img">{{ collection.image | image_url: width: 900 | image_tag: loading: 'eager', widths: '450, 700, 900', sizes: '40vw', alt: collection.title }}</div>
+      {%- endif -%}
+    </header>
+  </div>
+
+  {%- paginate collection.products by s.per_page -%}
+    <div class="hsd-container hsd-plp" data-hsd-plp>
+      {%- if collection.filters.size > 0 -%}
+        {% render 'hsd-filters', results: collection, action_url: collection.url %}
+      {%- endif -%}
+
+      <div{% if collection.filters.size == 0 %} style="grid-column:1/-1"{% endif %}>
+        {% render 'hsd-toolbar', results: collection, action_url: collection.url, count: collection.products_count %}
+
+        {%- if collection.products.size > 0 -%}
+          <ul class="hsd-grid" style="--hsd-cols: {{ s.columns }}" role="list">
+            {%- for product in collection.products -%}
+              <li>{% render 'hsd-product-card', product: product, sizes: '(min-width: 990px) 22vw, 50vw', eager: forloop.first %}</li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <div class="hsd-empty">
+            <h2 class="hsd-h3">Nothing on this shelf matches.</h2>
+            <p class="hsd-lede" style="margin:0">Try removing a filter, or call us on (229) 513-4377 — we may have it in the shop.</p>
+            <a class="hsd-btn hsd-btn--ink" href="{{ collection.url }}">Clear filters</a>
+          </div>
+        {%- endif -%}
+
+        {% render 'hsd-pagination', paginate: paginate %}
+      </div>
+    </div>
+  {%- endpaginate -%}
+</div>
+
+{% schema %}
+{
+  "name": "HSD Collection",
+  "class": "hsd-section-collection",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 12, "max": 48, "step": 4, "default": 24 },
+    { "type": "range", "id": "columns", "label": "Columns on desktop", "min": 3, "max": 4, "step": 1, "default": 3 },
+    { "type": "checkbox", "id": "show_description", "label": "Show collection description", "default": true },
+    { "type": "checkbox", "id": "show_image", "label": "Show collection image", "default": true }
+  ],
+  "enabled_on": { "templates": ["collection"] }
+}
+{% endschema %}

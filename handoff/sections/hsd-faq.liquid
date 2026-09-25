@@ -1,0 +1,40 @@
+{%- comment -%} FAQ accordion. Each question is a block; uses <details> so it works with no JavaScript. Emits FAQPage structured data. {%- endcomment -%}
+<div class="hsd">
+  <div class="hsd-container hsd-page-head">
+    <p class="hsd-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    <h1 class="hsd-h1" style="font-size:clamp(36px,4.4vw,60px)">{{ page.title | default: section.settings.heading | escape }}</h1>
+  </div>
+  <div class="hsd-container" style="padding-bottom:var(--hsd-section-y)">
+    <div class="hsd-faq">
+      {%- for block in section.blocks -%}
+        <details {{ block.shopify_attributes }}{% if forloop.first %} open{% endif %}>
+          <summary>{{ block.settings.question | escape }}</summary>
+          <div class="hsd-faq__a">{{ block.settings.answer }}</div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{%- for block in section.blocks -%}
+{"@type":"Question","name":{{ block.settings.question | json }},"acceptedAnswer":{"@type":"Answer","text":{{ block.settings.answer | strip_html | json }}}}{% unless forloop.last %},{% endunless %}
+{%- endfor -%}]}
+</script>
+
+{% schema %}
+{
+  "name": "HSD FAQ",
+  "class": "hsd-section-faq",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Good questions" },
+    { "type": "text", "id": "heading", "label": "Heading (if no page title)", "default": "Frequently asked questions" }
+  ],
+  "blocks": [
+    { "type": "question", "name": "Question", "settings": [
+      { "type": "text", "id": "question", "label": "Question", "default": "Are your products genuine and sealed?" },
+      { "type": "richtext", "id": "answer", "label": "Answer", "default": "<p>Yes. Everything is sold in the manufacturer's own sealed packaging.</p>" } ] }
+  ],
+  "presets": [{ "name": "HSD FAQ" }]
+}
+{% endschema %}

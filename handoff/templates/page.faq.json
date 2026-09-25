@@ -1,0 +1,71 @@
+{
+  "sections": {
+    "main": {
+      "type": "hsd-faq",
+      "blocks": {
+        "q1": {
+          "type": "question",
+          "settings": {
+            "question": "Are your products genuine and sealed?",
+            "answer": "<p>Yes. Everything is sold in the manufacturer's own sealed packaging, exactly as it sits on our shelves in Cordele.</p>"
+          }
+        },
+        "q2": {
+          "type": "question",
+          "settings": {
+            "question": "Where do you ship?",
+            "answer": "<p>Across the United States. Details on our <a href=\"/pages/delivery\">Delivery</a> page.</p>"
+          }
+        },
+        "q3": {
+          "type": "question",
+          "settings": {
+            "question": "How much is delivery?",
+            "answer": "<p>$20 on every order, whatever you buy. Orders are posted the next business day.</p>"
+          }
+        },
+        "q4": {
+          "type": "question",
+          "settings": {
+            "question": "Do you have a real shop?",
+            "answer": "<p>Yes \u2014 401 E 16th Ave, Suite H, Cordele, GA 31015. We have served customers over the counter for years. This website is new; the shop is not.</p>"
+          }
+        },
+        "q5": {
+          "type": "question",
+          "settings": {
+            "question": "Where do the ingredients and warnings on your product pages come from?",
+            "answer": "<p>Straight off the label on the pack. We copy them word for word. We do not summarise them, and we do not add health claims of our own.</p>"
+          }
+        },
+        "q6": {
+          "type": "question",
+          "settings": {
+            "question": "Can I return a supplement?",
+            "answer": "<p>Supplements can't be returned once they have left the shop, because we can't know how they were stored. If anything arrives damaged, leaking or wrong, we replace it or refund you and pay the postage.</p>"
+          }
+        },
+        "q7": {
+          "type": "question",
+          "settings": {
+            "question": "How do I get in touch?",
+            "answer": "<p>Call (229) 513-4377, 10am to 7pm, seven days a week, or use the <a href=\"/pages/contact\">contact form</a>.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "q7"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

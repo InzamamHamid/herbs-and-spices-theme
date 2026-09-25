@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "hsd-main-page",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
