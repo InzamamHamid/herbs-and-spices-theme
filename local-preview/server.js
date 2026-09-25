@@ -64,7 +64,7 @@ function product({ handle, title, vendor, type, photos, sizes, tags = [], desc, 
   const prices = variants.map((v) => v.price);
   const first = variants.find((v) => v.available) || variants[0];
   const metafields = { custom: {} };
-  Object.entries(mf).forEach(([k, value]) => { metafields.custom[k] = { value }; });
+  Object.entries(mf).forEach(([k, value]) => { metafields.custom[k] = { value, type: Array.isArray(value) ? 'list.single_line_text_field' : 'single_line_text_field' }; });
   return {
     object_type: 'product', id: ++productId, handle, title, vendor, type, tags, created: ++createdAt,
     url: `/products/${handle}`,
@@ -95,8 +95,8 @@ const P = [
   product({ handle: 'liquid-blenz-soursop-bitter-tonic', title: 'Soursop Bitter Tonic', vendor: 'Liquid Blenz', type: 'Herbal tonic',
     photos: [['soursop', 'Front of pack (stand-in photo)'], ['ashwagandha', 'Back label (stand-in photo)']],
     sizes: [{ name: '16 oz', price: 25.99, unit: { qty: 16, ref: 'fl oz' } }, { name: '32 oz', price: 39.99, unit: { qty: 32, ref: 'fl oz' } }],
-    desc: 'A liquid herbal tonic from Liquid Blenz, sold sealed exactly as it sits on our shelf in Cordele.', mf: { ...LABEL, net_content: 16, net_content_unit: 'fl oz' }, cols: [W] }),
-  product({ handle: 'alchemists-kitchen-ashwagandha-30', title: 'Ashwagandha, 30 capsules', vendor: "The Alchemist's Kitchen", type: 'Supplement', photos: [['ashwagandha', 'Front of pack']], sizes: [{ price: 24.99 }], mf: { ...LABEL, net_content: 30, net_content_unit: 'capsules' }, cols: [W] }),
+    desc: 'A liquid herbal tonic from Liquid Blenz, sold sealed exactly as it sits on our shelf in Cordele.', mf: { ...LABEL, net_content: 16, net_content_unit: 'fl oz', state_restrictions: ['California', 'New York'] }, cols: [W] }),
+  product({ handle: 'alchemists-kitchen-ashwagandha-30', title: 'Ashwagandha, 30 capsules', vendor: "The Alchemist's Kitchen", type: 'Supplement', photos: [['ashwagandha', 'Front of pack']], sizes: [{ price: 24.99 }], mf: { ...LABEL, net_content: 30, net_content_unit: 'capsules', state_restrictions: 'Hawaii' }, cols: [W] }),
   product({ handle: 'ryze-mushroom-coffee', title: 'Mushroom Coffee', vendor: 'RYZE', type: 'Supplement', photos: [['ryze', 'Front of pack']], sizes: [{ price: 44.99 }], mf: { ...LABEL }, cols: [W] }),
   product({ handle: 'iron-d3-k2-range', title: 'Iron & D3 + K2 Liquid Drops', vendor: 'Wellness shelf', type: 'Supplement', photos: [['iron', 'Front of pack']], sizes: [{ name: '1 fl oz', price: 16.99 }, { name: '2 fl oz', price: 27.99 }], mf: { ...LABEL }, cols: [W] }),
   product({ handle: 'kashmiri-chilli-powder-200-g', title: 'Kashmiri Chilli Powder, 200 g', vendor: 'Anand Foods', type: 'Ground spice', photos: [['spices', '']], sizes: [{ price: 6.49 }], mf: { ...FOOD, alt_name: 'Lal mirch' }, cols: [SP] }),

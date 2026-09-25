@@ -85,7 +85,7 @@ Not needed as theme pages: **checkout** (Shopify's own) and **customer accounts*
 | `label_photographed` | Date | **New.** "Photographed in our shop on …" under each tab |
 | `dshea_disclaimer_required` | True/false | FDA disclaimer in the buy box. Renames the facts tab to "Supplement facts" |
 | `ga_tax_class` | Single line: `food` / `supplement` | `supplement` shows the no-returns line on the product and in the cart |
-| `state_restrictions` | Single line | "We can't ship this item to: …" notice |
+| `state_restrictions` | Single line **or** list of single line text | "We can't ship this item to: …" notice (list values are joined with commas) |
 
 - Tabs with an empty metafield are hidden automatically. No blank tabs.
 - **Back-label photo:** give one product image the ALT text `Back label` and it appears next to the tabs.

@@ -148,7 +148,12 @@
       {%- endunless -%}
 
       {%- if mf.state_restrictions.value != blank -%}
-        <p class="hsd-restrict">{{ s.restriction_prefix | escape }} {{ mf.state_restrictions.value | escape }}</p>
+        {%- if mf.state_restrictions.type contains 'list' -%}
+          {%- assign restricted = mf.state_restrictions.value | join: ', ' -%}
+        {%- else -%}
+          {%- assign restricted = mf.state_restrictions.value -%}
+        {%- endif -%}
+        <p class="hsd-restrict">{{ s.restriction_prefix | escape }} {{ restricted | escape }}</p>
       {%- endif -%}
 
       {%- form 'product', product, data-hsd-product-form: '', novalidate: 'novalidate' -%}
