@@ -62,6 +62,41 @@
       {%- if shop.customer_accounts_enabled -%}<a href="{{ routes.account_url }}">Account</a>{%- endif -%}
     </nav>
   </div>
+
+  {%- comment -%}
+    Cart drawer. Opens after an add to cart (once the spice puff lands) and from
+    the cart button. Rendered from /cart.js by hsd-theme.js. Without JavaScript the
+    cart button is a normal link to the cart page.
+  {%- endcomment -%}
+  <div class="hsd-cart-drawer" id="HsdCartDrawer" data-hsd-cart-drawer
+    data-threshold="{{ section.settings.free_threshold | times: 100 }}"
+    data-open-on-add="{{ section.settings.open_cart_on_add }}" hidden>
+    <div class="hsd-cart-drawer__scrim" data-hsd-cart-close></div>
+    <div class="hsd hsd-cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="HsdCartTitle">
+      <div class="hsd-cart-drawer__head">
+        <h2 class="hsd-h3" id="HsdCartTitle">Your cart <span class="hsd-cart-drawer__count" data-hsd-cart-drawer-count></span></h2>
+        <button type="button" class="hsd-icon-btn" aria-label="Close cart" data-hsd-cart-close>{% render 'hsd-icon', icon: 'close', size: 22 %}</button>
+      </div>
+      <div class="hsd-progress hsd-cart-drawer__ship" data-hsd-cart-ship hidden>
+        <span data-hsd-cart-ship-text></span>
+        <div class="hsd-progress__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Progress to free shipping"><span data-hsd-cart-ship-bar></span></div>
+      </div>
+      <ul class="hsd-cart-drawer__items" data-hsd-cart-items></ul>
+      <div class="hsd-cart-drawer__empty" data-hsd-cart-empty hidden>
+        <p>Your cart is empty.</p>
+        <a class="hsd-btn hsd-btn--primary" href="{{ routes.all_products_collection_url }}">Shop the shelves</a>
+      </div>
+      <div class="hsd-cart-drawer__foot" data-hsd-cart-foot>
+        <div class="hsd-cart-drawer__total"><span>Subtotal</span><strong data-hsd-cart-subtotal></strong></div>
+        <p class="hsd-small">Taxes and shipping are worked out at checkout.</p>
+        <form action="{{ routes.cart_url }}" method="post">
+          <button type="submit" name="checkout" class="hsd-btn hsd-btn--primary hsd-cart-drawer__checkout">Check out</button>
+        </form>
+        <a class="hsd-link-underline hsd-cart-drawer__view" href="{{ routes.cart_url }}">View cart and add a note</a>
+      </div>
+    </div>
+  </div>
+  <p class="hsd-visually-hidden" role="status" data-hsd-cart-status></p>
 </header>
 
 {% schema %}
@@ -73,7 +108,10 @@
     { "type": "range", "id": "logo_width", "label": "Logo width", "min": 120, "max": 320, "step": 10, "unit": "px", "default": 220 },
     { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
     { "type": "text", "id": "highlight_title", "label": "Highlight this menu item in red", "default": "Offers", "info": "Exact menu title, e.g. Offers" },
-    { "type": "checkbox", "id": "sticky", "label": "Stick to top on scroll", "default": true }
+    { "type": "checkbox", "id": "sticky", "label": "Stick to top on scroll", "default": true },
+    { "type": "header", "content": "Cart drawer" },
+    { "type": "checkbox", "id": "open_cart_on_add", "label": "Open the cart drawer after adding a product", "default": true },
+    { "type": "number", "id": "free_threshold", "label": "Free shipping over ($)", "info": "Shows a progress bar in the drawer. 0 hides it. Must match your shipping rates.", "default": 0 }
   ],
   "enabled_on": { "groups": ["header"] }
 }

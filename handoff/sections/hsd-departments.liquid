@@ -21,8 +21,8 @@
           assign url = c.url | default: routes.collections_url
         -%}
         <a class="hsd-dept hsd-tint-{{ block.settings.tint }}" href="{{ url }}" {{ block.shopify_attributes }}>
-          <span class="hsd-dept__icon" style="color: var(--hsd-{% if block.settings.tint == 'green' %}green{% elsif block.settings.tint == 'red' %}red{% else %}cinnamon{% endif %})">
-            {% render 'hsd-icon', icon: block.settings.icon, size: 30, stroke: 1.6 %}
+          <span class="hsd-dept__icon">
+            {% render 'hsd-icon', icon: block.settings.icon, size: 40, stroke: 1.6 %}
           </span>
           <span>
             <span class="hsd-dept__name">{{ title | escape }}</span>
@@ -62,8 +62,8 @@
           { "value": "dropper", "label": "Oils (dropper)" }, { "value": "leaf", "label": "Skin & hair (leaf)" },
           { "value": "jar", "label": "Ghee & condiments (jar)" }, { "value": "pantry", "label": "Pantry (box)" } ] },
         { "type": "select", "id": "tint", "label": "Tile colour", "default": "cream", "options": [
-          { "value": "red", "label": "Chilli tint" }, { "value": "gold", "label": "Turmeric tint" },
-          { "value": "green", "label": "Leaf tint" }, { "value": "cream", "label": "Kraft" } ] }
+          { "value": "red", "label": "Chilli" }, { "value": "gold", "label": "Turmeric" },
+          { "value": "green", "label": "Leaf" }, { "value": "cream", "label": "Cinnamon" } ] }
       ]
     }
   ],

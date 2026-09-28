@@ -3,25 +3,28 @@
     "hero": {
       "type": "hsd-hero",
       "blocks": {
+        "word-1": { "type": "word", "settings": { "word": "Haldi", "language": "Hindi / Urdu", "meaning": "Turmeric", "color": "#E0A21B", "link": "/search?q=turmeric&type=product", "product": "ground-turmeric-200-g" } },
+        "word-2": { "type": "word", "settings": { "word": "Scotch bonnet", "language": "Jamaica", "meaning": "Hot pepper", "color": "#D9412B", "link": "/search?q=scotch+bonnet&type=product" } },
+        "word-3": { "type": "word", "settings": { "word": "Kasuri methi", "language": "Punjabi", "meaning": "Dried fenugreek", "color": "#5E9C4F", "link": "/search?q=fenugreek&type=product", "product": "dried-fenugreek-leaves-50-g" } },
+        "word-4": { "type": "word", "settings": { "word": "Kalonji", "language": "Urdu / Bengali", "meaning": "Black seed", "color": "#F3E9CF", "link": "/search?q=black+seed&type=product", "product": "black-seed-oil-100-ml" } },
+        "word-5": { "type": "word", "settings": { "word": "Canela", "language": "Spanish", "meaning": "Cinnamon", "color": "#B8753F", "link": "/search?q=cinnamon&type=product" } },
         "chip-1": { "type": "chip", "settings": { "label": "Turmeric", "link": "/search?q=turmeric&type=product" } },
         "chip-2": { "type": "chip", "settings": { "label": "Basmati rice", "link": "/search?q=basmati&type=product" } },
         "chip-3": { "type": "chip", "settings": { "label": "Soursop", "link": "/search?q=soursop&type=product" } },
         "chip-4": { "type": "chip", "settings": { "label": "Black seed", "link": "/search?q=black+seed&type=product" } }
       },
-      "block_order": ["chip-1", "chip-2", "chip-3", "chip-4"],
+      "block_order": ["word-1", "word-2", "word-3", "word-4", "word-5", "chip-1", "chip-2", "chip-3", "chip-4"],
       "settings": {
-        "stamp": "Cordele, Georgia · Family shop",
-        "heading": "The shelves from the video,",
-        "heading_accent": "now at your door.",
+        "location": "Cordele, Georgia · Open 7 days",
+        "proof": "547K views on Facebook",
+        "heading": "Every kitchen's spices. One shop in Georgia.",
         "text": "Spices, rice, teas and wellness from our shop floor in Cordele. Picked, packed and shipped across the US the next business day.",
+        "motion": "full",
+        "interval": 5,
         "show_search": true,
         "button_label": "Shop the shelves",
         "button_link": "/collections/all",
-        "video_label": "Watch the video",
-        "seal_big": "547K",
-        "seal_small": "Views on Facebook",
-        "polaroid_caption": "Wellness shelf",
-        "note": "fresh off our shelves!"
+        "video_label": "Watch the video"
       }
     },
     "trust": {

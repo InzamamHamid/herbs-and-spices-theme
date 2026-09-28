@@ -10,6 +10,8 @@ const ROOT = path.resolve(__dirname, '..');
 const HANDOFF = path.join(ROOT, 'handoff');
 const IMG_DIR = path.join(__dirname, 'img'); // sample photos used by the preview
 const PORT = Number(process.env.PORT || 9292);
+// Local only by default. HOST=0.0.0.0 lets phones on the same Wi-Fi open the preview.
+const HOST = process.env.HOST || '127.0.0.1';
 
 /* ================================================================ images */
 const PHOTOS = {
@@ -99,11 +101,11 @@ const P = [
   product({ handle: 'alchemists-kitchen-ashwagandha-30', title: 'Ashwagandha, 30 capsules', vendor: "The Alchemist's Kitchen", type: 'Supplement', photos: [['ashwagandha', 'Front of pack']], sizes: [{ price: 24.99 }], mf: { ...LABEL, net_content: 30, net_content_unit: 'capsules', state_restrictions: 'Hawaii' }, cols: [W] }),
   product({ handle: 'ryze-mushroom-coffee', title: 'Mushroom Coffee', vendor: 'RYZE', type: 'Supplement', photos: [['ryze', 'Front of pack']], sizes: [{ price: 44.99 }], mf: { ...LABEL }, cols: [W] }),
   product({ handle: 'iron-d3-k2-range', title: 'Iron & D3 + K2 Liquid Drops', vendor: 'Wellness shelf', type: 'Supplement', photos: [['iron', 'Front of pack']], sizes: [{ name: '1 fl oz', price: 16.99 }, { name: '2 fl oz', price: 27.99 }], mf: { ...LABEL }, cols: [W] }),
-  product({ handle: 'kashmiri-chilli-powder-200-g', title: 'Kashmiri Chilli Powder, 200 g', vendor: 'Anand Foods', type: 'Ground spice', photos: [['spices', '']], sizes: [{ price: 6.49 }], mf: { ...FOOD, alt_name: 'Lal mirch' }, cols: [SP] }),
-  product({ handle: 'black-peppercorns-200-g', title: 'Whole Black Peppercorns, 200 g', vendor: 'Anand Foods', type: 'Whole spice', photos: [['spices', '']], sizes: [{ price: 7.99 }], mf: { ...FOOD, alt_name: 'Kali mirch' }, cols: [SP] }),
-  product({ handle: 'green-cardamom-pods-100-g', title: 'Green Cardamom Pods, 100 g', vendor: 'Khan Pantry', type: 'Whole spice', photos: [['herbs', '']], sizes: [{ price: 12.99 }], mf: { ...FOOD, alt_name: 'Elaichi' }, cols: [SP] }),
-  product({ handle: 'dried-fenugreek-leaves-50-g', title: 'Dried Fenugreek Leaves, 50 g', vendor: 'Khan Pantry', type: 'Culinary herb', photos: [['herbs', '']], sizes: [{ price: 4.49 }], mf: { ...FOOD, alt_name: 'Kasuri methi' }, cols: [SP] }),
-  product({ handle: 'ground-turmeric-200-g', title: 'Ground Turmeric, 200 g', vendor: 'Anand Foods', type: 'Ground spice', photos: [['spices', '']], sizes: [{ price: 5.99 }], mf: { ...FOOD, alt_name: 'Haldi' }, cols: [SP] }),
+  product({ handle: 'kashmiri-chilli-powder-200-g', title: 'Kashmiri Chilli Powder, 200 g', vendor: 'Anand Foods', type: 'Ground spice', photos: [['spices', '']], sizes: [{ price: 6.49 }], mf: { ...FOOD, alt_name: 'Lal mirch', spice_color: '#D9412B' }, cols: [SP] }),
+  product({ handle: 'black-peppercorns-200-g', title: 'Whole Black Peppercorns, 200 g', vendor: 'Anand Foods', type: 'Whole spice', photos: [['spices', '']], sizes: [{ price: 7.99 }], mf: { ...FOOD, alt_name: 'Kali mirch', spice_color: '#B8753F' }, cols: [SP] }),
+  product({ handle: 'green-cardamom-pods-100-g', title: 'Green Cardamom Pods, 100 g', vendor: 'Khan Pantry', type: 'Whole spice', photos: [['herbs', '']], sizes: [{ price: 12.99 }], mf: { ...FOOD, alt_name: 'Elaichi', spice_color: '#5E9C4F' }, cols: [SP] }),
+  product({ handle: 'dried-fenugreek-leaves-50-g', title: 'Dried Fenugreek Leaves, 50 g', vendor: 'Khan Pantry', type: 'Culinary herb', photos: [['herbs', '']], sizes: [{ price: 4.49 }], mf: { ...FOOD, alt_name: 'Kasuri methi', spice_color: '#5E9C4F' }, cols: [SP] }),
+  product({ handle: 'ground-turmeric-200-g', title: 'Ground Turmeric, 200 g', vendor: 'Anand Foods', type: 'Ground spice', photos: [['spices', '']], sizes: [{ price: 5.99 }], mf: { ...FOOD, alt_name: 'Haldi', spice_color: '#E0A21B' }, cols: [SP] }),
   product({ handle: 'basmati-rice', title: 'Aged Basmati Rice', vendor: 'Zafar Mills', type: 'Rice', photos: [['bowl', '']], sizes: [{ name: '5 lb', price: 11.99, unit: { qty: 5, ref: 'lb' } }, { name: '10 lb', price: 19.99, unit: { qty: 10, ref: 'lb' } }], mf: { ...FOOD, alt_name: 'Chawal' }, cols: [RG] }),
   product({ handle: 'chapati-atta-10-lb', title: 'Chapati Atta, 10 lb', vendor: 'Zafar Mills', type: 'Flour', photos: [['bowl', '']], sizes: [{ price: 14.99, compare: 17.99 }], mf: { ...FOOD }, cols: [RG] }),
   product({ handle: 'gram-flour-4-lb', title: 'Gram Flour, 4 lb', vendor: 'Zafar Mills', type: 'Flour', photos: [['bowl', '']], sizes: [{ price: 8.99 }], mf: { ...FOOD, alt_name: 'Besan' }, cols: [RG] }),
@@ -292,7 +294,20 @@ function cartObject() {
   const total = items.reduce((n, i) => n + i.final_line_price, 0);
   return { items, item_count: items.reduce((n, i) => n + i.quantity, 0), total_price: total, items_subtotal_price: total, note: cart.note, cart_level_discount_applications: [] };
 }
-const cartJson = () => { const c = cartObject(); return { item_count: c.item_count, total_price: c.total_price, items: c.items.map((i) => ({ id: i.variant.id, quantity: i.quantity, title: i.title, price: i.final_price })) }; };
+// Same shape as Shopify's /cart.js (the fields the theme reads).
+const cartJson = () => {
+  const c = cartObject();
+  return {
+    item_count: c.item_count, total_price: c.total_price, items_subtotal_price: c.total_price,
+    items: c.items.map((i) => ({
+      id: i.variant.id, key: i.key, quantity: i.quantity, title: i.title, price: i.final_price,
+      product_title: i.product.title, variant_title: i.product.has_only_default_variant ? null : i.variant.title,
+      product_has_only_default_variant: i.product.has_only_default_variant,
+      image: i.product.featured_media?.src || null, url: i.url, vendor: i.product.vendor,
+      final_price: i.final_price, final_line_price: i.final_line_price, original_line_price: i.original_line_price,
+    })),
+  };
+};
 
 /* ============================================================ Liquid shim */
 const shopifyify = (src) => src.replace(/posted_successfully\?/g, 'posted_successfully');
@@ -407,6 +422,7 @@ function resolveSetting(def, value) {
   switch (def.type) {
     case 'collection': return typeof value === 'string' ? collectionFor(value) : value || null;
     case 'link_list': return typeof value === 'string' ? MENUS[value] || null : value || null;
+    case 'product': return typeof value === 'string' ? BY[value] || null : value || null;
     case 'product_list': return Array.isArray(value) ? value.map((h) => (typeof h === 'string' ? BY[h] : h)).filter(Boolean) : [];
     default: return value === undefined ? null : value;
   }
@@ -513,6 +529,13 @@ http.createServer(async (req, res) => {
       try { addItem(multipartField(raw, 'id'), Number(multipartField(raw, 'quantity')) || 1); } catch (e) { /* ignore in preview */ }
       return redirect(res, '/cart');
     }
+    if (p === '/cart/change.js' && req.method === 'POST') {
+      const j = JSON.parse((await readBody(req)) || '{}');
+      const line = Number(j.line) - 1;
+      const qty = Number(j.quantity);
+      if (cart.items[line]) { if (qty <= 0) cart.items.splice(line, 1); else cart.items[line].quantity = qty; }
+      return send(res, 200, JSON.stringify(cartJson()), 'application/json');
+    }
     if (p === '/cart/change') {
       const line = Number(url.searchParams.get('line')) - 1;
       const qty = Number(url.searchParams.get('quantity'));
@@ -604,4 +627,4 @@ http.createServer(async (req, res) => {
     console.error(e);
     return send(res, 500, `<pre style="white-space:pre-wrap;padding:24px">${String(e.stack || e).replace(/</g, '&lt;')}</pre>`);
   }
-}).listen(PORT, '127.0.0.1', () => console.log(`Herbs & Spices preview → http://localhost:${PORT}`));
+}).listen(PORT, HOST, () => console.log(`Herbs & Spices preview → http://${HOST === '0.0.0.0' ? '<this-computer-ip>' : 'localhost'}:${PORT}`));

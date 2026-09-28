@@ -1,19 +1,54 @@
 {%- comment -%}
   Render ONCE inside <head> of layout/theme.liquid:
     {% render 'hsd-head' %}
-  Loads fonts, the design-system CSS and the behaviour JS (deferred).
+  Loads the self-hosted fonts, the design-system CSS and the behaviour JS (deferred).
+  All fonts are SIL Open Font License, served from the theme's own assets (Shopify CDN).
 {%- endcomment -%}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..800;1,9..144,500..800&family=DM+Sans:opsz,wght@9..40,400..700&family=Caveat:wght@600..700&display=swap">
-{{ 'hsd-logo-bookman.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+{{ 'hsd-font-bigshoulders.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+{{ 'hsd-font-atkinson.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
 <style>
+  @font-face {
+    font-family: "Big Shoulders Display";
+    src: url("{{ 'hsd-font-bigshoulders.woff2' | asset_url }}") format("woff2");
+    font-weight: 500 900;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Atkinson Hyperlegible Next";
+    src: url("{{ 'hsd-font-atkinson.woff2' | asset_url }}") format("woff2");
+    font-weight: 400 800;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Atkinson Hyperlegible Next";
+    src: url("{{ 'hsd-font-atkinson-italic.woff2' | asset_url }}") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "IBM Plex Mono";
+    src: url("{{ 'hsd-font-plexmono.woff2' | asset_url }}") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
   @font-face {
     font-family: "HSD Logo";
     src: url("{{ 'hsd-logo-bookman.woff2' | asset_url }}") format("woff2");
     font-style: italic;
     font-weight: 100 900;
     font-display: swap;
+  }
+  @font-face {
+    /* Fraunces ExtraBold, subset to the single looped "&" used in the logo */
+    font-family: "HSD Amp";
+    src: url("{{ 'hsd-font-amp.woff2' | asset_url }}") format("woff2");
+    font-weight: 100 900;
+    font-display: swap;
+    unicode-range: U+0026;
   }
 </style>
 {{ 'hsd-base.css' | asset_url | stylesheet_tag }}

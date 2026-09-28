@@ -9,19 +9,23 @@
     show_brand       bool (default true)
     eager            bool — first row above the fold
 
-  Optional metafield: custom.alt_name (single line text) — second-language
-  name, e.g. "Besan" under "Gram flour". Shown under the title.
+  Optional metafields:
+    custom.alt_name (single line text) — second-language name, e.g. "Besan"
+      under "Gram flour". Shown under the title.
+    custom.spice_color (color) — powder strip under the photo, and the colour
+      of the add-to-cart puff. Leave empty for non-spice products.
 {%- endcomment -%}
 {%- liquid
   assign sizes = sizes | default: '(min-width: 990px) 25vw, 50vw'
   assign v = product.selected_or_first_available_variant
   assign alt_name = product.metafields.custom.alt_name.value
+  assign spice = product.metafields.custom.spice_color.value
   assign loading = 'lazy'
   if eager
     assign loading = 'eager'
   endif
 -%}
-<article class="hsd-card">
+<article class="hsd-card"{% if spice != blank %} data-hsd-spice="{{ spice | escape }}" style="--hsd-spice: {{ spice | escape }}"{% endif %}>
   <div class="hsd-card__media">
     {%- if product.available == false -%}
       <span class="hsd-card__badge hsd-card__badge--soldout">Sold out</span>
@@ -41,6 +45,7 @@
       {{ 'product-apparel-1' | placeholder_svg_tag: 'hsd-card__placeholder' }}
     {%- endif -%}
   </div>
+  {%- if spice != blank -%}<span class="hsd-spice-strip" aria-hidden="true"></span>{%- endif -%}
 
   {%- unless show_brand == false -%}
     <span class="hsd-card__brand">{{ product.vendor | escape }}</span>

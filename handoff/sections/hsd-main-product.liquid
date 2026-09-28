@@ -2,6 +2,7 @@
   Product page — gallery + buy box.
   Data sources (all optional; anything empty is simply not shown):
     product.metafields.custom.alt_name                  single line  — second-language name
+    product.metafields.custom.spice_color               color        — powder strip + add-to-cart puff colour
     product.metafields.custom.net_content (+ _unit)      number + text — "16 fl oz" chip
     product.metafields.custom.country_of_origin          single line  — "Made in …" chip
     product.metafields.custom.dshea_disclaimer_required  boolean      — FDA supplement disclaimer
@@ -33,7 +34,7 @@
   endif
 -%}
 
-<div class="hsd" data-hsd-pdp>
+<div class="hsd" data-hsd-pdp{% if mf.spice_color.value != blank %} data-hsd-spice="{{ mf.spice_color.value | escape }}" style="--hsd-spice: {{ mf.spice_color.value | escape }}"{% endif %}>
   <nav class="hsd-container hsd-breadcrumb" aria-label="Breadcrumb">
     <ol>
       <li><a href="{{ routes.root_url }}">Home</a></li>
@@ -110,6 +111,7 @@
     {%- comment -%} ---------- Buy box ---------- {%- endcomment -%}
     <div class="hsd-buybox">
       <div style="display:grid;gap:10px">
+        {%- if mf.spice_color.value != blank -%}<span class="hsd-spice-strip hsd-spice-strip--short" aria-hidden="true"></span>{%- endif -%}
         {%- if product.vendor != blank -%}
           <a class="hsd-buybox__maker" href="{{ product.vendor | url_for_vendor }}">{{ product.vendor | escape }} · More from this maker</a>
         {%- endif -%}
