@@ -29,9 +29,13 @@
     <div class="hsd-delivery">
       <p class="hsd-eyebrow">{{ s.delivery_eyebrow | escape }}</p>
       <h2 class="hsd-h2" style="font-size:38px">{{ s.delivery_heading | escape }}</h2>
-      <dl class="hsd-delivery__rows">
+      <dl class="hsd-delivery__cards">
         {%- for block in section.blocks -%}
-          <div class="hsd-delivery__row" {{ block.shopify_attributes }}><dt>{{ block.settings.label | escape }}</dt><dd>{{ block.settings.value | escape }}</dd></div>
+          <div class="hsd-delivery__card" {{ block.shopify_attributes }}>
+            <span class="hsd-delivery__icon" aria-hidden="true">{% render 'hsd-icon', icon: block.settings.icon, size: 28, stroke: 1.6 %}</span>
+            <dt>{{ block.settings.label | escape }}</dt>
+            <dd>{{ block.settings.value | escape }}</dd>
+          </div>
         {%- endfor -%}
       </dl>
       {%- if s.delivery_link != blank -%}<a class="hsd-link-underline" href="{{ s.delivery_link }}">{{ s.delivery_link_label | escape }}</a>{%- endif -%}
@@ -60,17 +64,20 @@
   ],
   "max_blocks": 5,
   "blocks": [
-    { "type": "row", "name": "Delivery row", "settings": [
-      { "type": "text", "id": "label", "label": "Label", "default": "Standard delivery, anywhere in the US" },
+    { "type": "row", "name": "Delivery fact", "settings": [
+      { "type": "select", "id": "icon", "label": "Icon", "default": "truck", "options": [
+        { "value": "truck", "label": "Truck" }, { "value": "box", "label": "Box" }, { "value": "shop", "label": "Shop" },
+        { "value": "return", "label": "Return" }, { "value": "phone", "label": "Phone" }, { "value": "eye", "label": "Tracking (eye)" } ] },
+      { "type": "text", "id": "label", "label": "Label", "default": "US delivery" },
       { "type": "text", "id": "value", "label": "Value", "default": "$20" } ] }
   ],
   "presets": [
     {
       "name": "HSD Visit & delivery",
       "blocks": [
-        { "type": "row", "settings": { "label": "Standard delivery, anywhere in the US", "value": "$20" } },
-        { "type": "row", "settings": { "label": "Leaves our shop", "value": "Next business day" } },
-        { "type": "row", "settings": { "label": "Tracking", "value": "Emailed when it ships" } }
+        { "type": "row", "settings": { "icon": "truck", "label": "US delivery", "value": "$20" } },
+        { "type": "row", "settings": { "icon": "box", "label": "Leaves our shop", "value": "Next day" } },
+        { "type": "row", "settings": { "icon": "eye", "label": "Tracking emailed", "value": "Always" } }
       ]
     }
   ]

@@ -267,9 +267,9 @@ const OVERRIDES = {
   hero: { settings: { image: img('seamoss', 'Herbs & Spices Sea Moss Gel jars on the shop fridge'), polaroid_image: img('ashwagandha', 'Wellness shelf') } },
   story: { settings: { poster: img('seamoss', '') } },
   kits: { blocks: {
-    k1: { title: 'Biryani night', blurb: 'Long-grain rice, whole spices and ghee for a pot that feeds the whole table.', products: ['basmati-rice', 'green-cardamom-pods-100-g', 'pure-desi-ghee-500-g', 'kashmiri-chilli-powder-200-g', 'ground-turmeric-200-g'] },
-    k2: { title: 'Morning tea ritual', blurb: 'Slow mornings, done properly. Loose leaf, spice and something sweet.', products: ['kashmiri-kahwa-150-g', 'masala-chai-blend-250-g', 'green-cardamom-pods-100-g', 'fresh-barhi-dates'] },
-    k3: { title: 'Pantry starter', blurb: 'New kitchen, new city? The everyday basics from our own shelves.', products: ['chapati-atta-10-lb', 'gram-flour-4-lb', 'mango-pickle-400-g', 'ground-turmeric-200-g', 'extra-virgin-olive-oil-500-ml'] } } },
+    k1: { title: 'Biryani night', blurb: 'Rice, whole spices and ghee.', products: ['basmati-rice', 'green-cardamom-pods-100-g', 'pure-desi-ghee-500-g', 'kashmiri-chilli-powder-200-g', 'ground-turmeric-200-g'] },
+    k2: { title: 'Morning tea ritual', blurb: 'Loose leaf, spice, something sweet.', products: ['kashmiri-kahwa-150-g', 'masala-chai-blend-250-g', 'green-cardamom-pods-100-g', 'fresh-barhi-dates'] },
+    k3: { title: 'Pantry starter', blurb: 'Everyday basics for a new kitchen.', products: ['chapati-atta-10-lb', 'gram-flour-4-lb', 'mango-pickle-400-g', 'ground-turmeric-200-g', 'extra-virgin-olive-oil-500-ml'] } } },
   'page-main-about': {},
 };
 
@@ -386,7 +386,7 @@ const money = (c) => `$${((Number(c) || 0) / 100).toFixed(2)}`;
 const F = {
   money, money_without_currency: (c) => ((Number(c) || 0) / 100).toFixed(2),
   image_url: (i, ...a) => { const src = (i && (i.src || i)) || ''; const w = kv(a).width; return w ? `${src}?width=${w}` : src; },
-  image_tag: (url, ...a) => { const o = kv(a); return `<img ${attrs({ src: url, alt: o.alt ?? '', loading: o.loading, sizes: o.sizes, style: o.style, width: o.width, fetchpriority: o.fetchpriority })}>`; },
+  image_tag: (url, ...a) => { const o = kv(a); return `<img ${attrs({ src: url, alt: o.alt ?? '', class: o.class, loading: o.loading, sizes: o.sizes, style: o.style, width: o.width, height: o.height, fetchpriority: o.fetchpriority })}>`; },
   placeholder_svg_tag: (_n, cls) => `<svg class="${cls || ''}" viewBox="0 0 525 525" xmlns="http://www.w3.org/2000/svg"><rect width="525" height="525" fill="#EFE3C3"/><path d="M180 330l60-80 50 60 30-40 60 60z" fill="#D8C79E"/></svg>`,
   asset_url: (n) => `/assets/${n}`,
   stylesheet_tag: (u) => `<link rel="stylesheet" href="${u}">`,
@@ -471,18 +471,19 @@ async function layout(title, tplName, locals) {
 /* Placeholder artwork used when a photo isn't in local-preview/img/ (the public repo ships without photos).
    Drop your own JPGs into img/<name>.jpg or img/dept/<name>.jpg to replace them. */
 function placeholderImage(key, isDept) {
-  const tints = ['#F4D9D2', '#F6E3B0', '#DCE8D2', '#F3E6C4'];
-  const tint = tints[[...key].reduce((n, c) => n + c.charCodeAt(0), 0) % tints.length];
-  const label = key.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-  const icon = isDept
-    ? '<path d="M470 420h260l-32 110a48 48 0 0 1-46 34H548a48 48 0 0 1-46-34z M630 420l80-112" fill="none" stroke="#2B1D14" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>'
-    : '<rect x="560" y="250" width="80" height="54" rx="8" fill="#2B1D14"/><path d="M572 304h56v36c0 12 44 28 44 68v250a24 24 0 0 1-24 24H552a24 24 0 0 1-24-24V408c0-40 44-56 44-68z" fill="#7A3E12"/><rect x="528" y="460" width="144" height="150" fill="#FFFDF7"/>';
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="1200" height="1200">
-<rect width="1200" height="1200" fill="${tint}"/>
-<rect x="60" y="60" width="1080" height="1080" rx="40" fill="none" stroke="#2B1D14" stroke-opacity=".18" stroke-width="4" stroke-dasharray="18 14"/>
-${icon}
-<text x="600" y="820" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-weight="700" font-size="64" fill="#2B1D14">${esc(label)}</text>
-<text x="600" y="890" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="30" letter-spacing="6" fill="#7A6553">PHOTO PLACEHOLDER</text>
+  const label = key.replace(/[-_]/g, ' ').toUpperCase();
+  const seed = [...key].reduce((n, c) => n + c.charCodeAt(0), 0);
+  const spice = ['#E0A21B', '#D9412B', '#5E9C4F', '#B8753F'][seed % 4];
+  // Scattered "grains" so the slot reads as a photo-to-come, not as finished art.
+  let dots = '';
+  for (let i = 0; i < 260; i++) {
+    const x = (Math.sin(seed * 13 + i * 7.1) * 0.5 + 0.5) * 1200, y = (Math.cos(seed * 5 + i * 3.7) * 0.5 + 0.5) * 1200;
+    dots += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(2 + (i % 5) * 1.6).toFixed(1)}" fill="${spice}" opacity="${(0.25 + (i % 4) * 0.12).toFixed(2)}"/>`;
+  }
+  const bg = isDept ? '<rect width="1200" height="1200" fill="#3A281C"/>' : '<rect width="1200" height="1200" fill="#EFE6D2"/>';
+  const ink = isDept ? '#E9DDC4' : '#5A4636';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="1200" height="1200">${bg}${dots}
+<text x="60" y="110" font-family="ui-monospace, Menlo, monospace" font-size="44" fill="${ink}">PHOTO · ${esc(label)}</text>
 </svg>`;
 }
 

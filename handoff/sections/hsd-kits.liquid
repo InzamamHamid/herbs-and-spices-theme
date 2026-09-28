@@ -27,32 +27,33 @@
             endif
           endfor
           assign id_list = ids | split: ','
-          case block.settings.tint
-            when 'gold'
-              assign ink = 'var(--hsd-red)'
-            when 'green'
-              assign ink = 'var(--hsd-green)'
-            else
-              assign ink = 'var(--hsd-cinnamon)'
-          endcase
         -%}
         <article class="hsd-kit hsd-tint-{{ block.settings.tint }}" {{ block.shopify_attributes }}>
-          <div class="hsd-kit__top">
-            <span class="hsd-kit__num" style="color: {{ ink }}">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-            <span class="hsd-kit__count">{{ block.settings.products.count }} ITEMS</span>
-          </div>
-          <h3 class="hsd-h2" style="font-size:30px">{{ block.settings.title | escape }}</h3>
-          {%- if block.settings.blurb != blank -%}<p style="margin:0;font-size:15px;line-height:1.55;color:#3F2E22">{{ block.settings.blurb | escape }}</p>{%- endif -%}
-          <ul class="hsd-kit__items">
-            {%- for p in block.settings.products -%}
-              <li><span style="color: {{ ink }}">{% render 'hsd-icon', icon: 'check', size: 16, stroke: 2.4 %}</span><a href="{{ p.url }}" style="color:inherit">{{ p.title | escape }}</a></li>
+          {%- comment -%} The basket, shown as its products: a pile of pack shots. {%- endcomment -%}
+          <ul class="hsd-kit__pile" aria-label="In this basket">
+            {%- for p in block.settings.products limit: 6 -%}
+              <li>
+                <a href="{{ p.url }}" title="{{ p.title | escape }}">
+                  {%- if p.featured_media -%}
+                    {{ p.featured_media | image_url: width: 240 | image_tag: loading: 'lazy', width: 120, height: 120, alt: p.title }}
+                  {%- else -%}
+                    <span class="hsd-kit__blank">{{ p.title | escape }}</span>
+                  {%- endif -%}
+                </a>
+              </li>
             {%- else -%}
-              <li>Pick up to 6 products for this basket</li>
+              <li class="hsd-kit__empty">Pick up to 6 products for this basket</li>
             {%- endfor -%}
           </ul>
-          <div class="hsd-kit__foot">
-            <span class="hsd-kit__price">{% if total > 0 %}{{ total | money }}{% endif %}</span>
-            <button type="button" class="hsd-btn hsd-btn--ink" data-hsd-kit-add="[{{ id_list | join: ',' }}]"{% if id_list.size == 0 %} disabled{% endif %}>Add the basket</button>
+          <div class="hsd-kit__body">
+            <h3 class="hsd-kit__title">{{ block.settings.title | escape }}</h3>
+            {%- if block.settings.blurb != blank -%}<p class="hsd-kit__blurb">{{ block.settings.blurb | escape }}</p>{%- endif -%}
+            <div class="hsd-kit__foot">
+              <span class="hsd-kit__price">
+                {%- if total > 0 -%}{{ total | money }} <span class="hsd-kit__count">· {{ block.settings.products.size }} items</span>{%- endif -%}
+              </span>
+              <button type="button" class="hsd-btn hsd-btn--ink" data-hsd-kit-add="[{{ id_list | join: ',' }}]"{% if id_list.size == 0 %} disabled{% endif %}>Add the basket</button>
+            </div>
           </div>
         </article>
       {%- endfor -%}
@@ -88,9 +89,9 @@
     {
       "name": "HSD Cook tonight",
       "blocks": [
-        { "type": "kit", "settings": { "title": "Biryani night", "blurb": "Long-grain rice, whole spices and ghee for a pot that feeds the whole table.", "tint": "gold" } },
-        { "type": "kit", "settings": { "title": "Morning tea ritual", "blurb": "Slow mornings, done properly. Loose leaf, spice and something sweet.", "tint": "green" } },
-        { "type": "kit", "settings": { "title": "Pantry starter", "blurb": "New kitchen, new city? The everyday basics from our own shelves.", "tint": "red" } }
+        { "type": "kit", "settings": { "title": "Biryani night", "blurb": "Rice, whole spices and ghee.", "tint": "gold" } },
+        { "type": "kit", "settings": { "title": "Morning tea ritual", "blurb": "Loose leaf, spice, something sweet.", "tint": "green" } },
+        { "type": "kit", "settings": { "title": "Pantry starter", "blurb": "Everyday basics for a new kitchen.", "tint": "red" } }
       ]
     }
   ]

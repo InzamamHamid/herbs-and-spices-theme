@@ -20,11 +20,23 @@
           assign title = block.settings.title | default: c.title
           assign url = c.url | default: routes.collections_url
         -%}
-        <a class="hsd-dept hsd-tint-{{ block.settings.tint }}" href="{{ url }}" {{ block.shopify_attributes }}>
-          <span class="hsd-dept__icon">
-            {% render 'hsd-icon', icon: block.settings.icon, size: 40, stroke: 1.6 %}
-          </span>
-          <span>
+        {%- liquid
+          assign photo = block.settings.image | default: c.image
+        -%}
+        <a class="hsd-dept hsd-tint-{{ block.settings.tint }}{% if photo %} hsd-dept--photo{% endif %}" href="{{ url }}" {{ block.shopify_attributes }}>
+          {%- if photo -%}
+            {{ photo | image_url: width: 900 | image_tag:
+              widths: '300, 450, 600, 900',
+              sizes: '(min-width: 990px) 25vw, 50vw',
+              loading: 'lazy',
+              class: 'hsd-dept__photo',
+              alt: ''
+            }}
+          {%- else -%}
+            <span class="hsd-dept__texture" aria-hidden="true"></span>
+            <span class="hsd-dept__icon" aria-hidden="true">{% render 'hsd-icon', icon: block.settings.icon, size: 40, stroke: 1.6 %}</span>
+          {%- endif -%}
+          <span class="hsd-dept__label">
             <span class="hsd-dept__name">{{ title | escape }}</span>
             {%- if block.settings.subtitle != blank -%}
               <span class="hsd-dept__sub">{{ block.settings.subtitle | escape }} {% render 'hsd-icon', icon: 'arrow', size: 14, stroke: 2.2 %}</span>
@@ -55,8 +67,9 @@
       "settings": [
         { "type": "collection", "id": "collection", "label": "Collection" },
         { "type": "text", "id": "title", "label": "Title", "info": "Leave empty to use the collection title" },
+        { "type": "image_picker", "id": "image", "label": "Photo", "info": "Close-up of the products or ingredients, square or portrait. Leave empty to use the collection's own image." },
         { "type": "text", "id": "subtitle", "label": "Subtitle" },
-        { "type": "select", "id": "icon", "label": "Icon", "default": "mortar", "options": [
+        { "type": "select", "id": "icon", "label": "Icon (shown when there is no photo)", "default": "mortar", "options": [
           { "value": "mortar", "label": "Spices (mortar)" }, { "value": "sack", "label": "Rice & flour (sack)" },
           { "value": "capsule", "label": "Wellness (capsule)" }, { "value": "cup", "label": "Tea (cup)" },
           { "value": "dropper", "label": "Oils (dropper)" }, { "value": "leaf", "label": "Skin & hair (leaf)" },

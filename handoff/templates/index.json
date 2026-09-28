@@ -30,10 +30,10 @@
     "trust": {
       "type": "hsd-trust-strip",
       "blocks": {
-        "t1": { "type": "item", "settings": { "icon": "box", "text": "Sealed maker's packaging" } },
-        "t2": { "type": "item", "settings": { "icon": "label", "text": "Label copied word for word" } },
-        "t3": { "type": "item", "settings": { "icon": "truck", "text": "Ships next business day" } },
-        "t4": { "type": "item", "settings": { "icon": "shop", "text": "A real shop — visit us in Cordele" } }
+        "t1": { "type": "item", "settings": { "icon": "box", "text": "Sealed packs" } },
+        "t2": { "type": "item", "settings": { "icon": "label", "text": "Label-exact info" } },
+        "t3": { "type": "item", "settings": { "icon": "truck", "text": "Ships next day" } },
+        "t4": { "type": "item", "settings": { "icon": "shop", "text": "Real Cordele shop" } }
       },
       "block_order": ["t1", "t2", "t3", "t4"]
     },
@@ -49,7 +49,8 @@
         "d7": { "type": "department", "settings": { "collection": "cooking-oils-ghee", "title": "Cooking Oils & Ghee", "subtitle": "Kitchen staples", "icon": "jar", "tint": "gold" } },
         "d8": { "type": "department", "settings": { "collection": "pantry-packaged", "title": "Pantry & Snacks", "subtitle": "Cupboard basics", "icon": "pantry", "tint": "red" } }
       },
-      "block_order": ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"]
+      "block_order": ["d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8"],
+      "settings": { "eyebrow": "", "heading": "Shop by aisle", "heading_accent": "", "link_label": "All products" }
     },
     "just-unpacked": {
       "type": "hsd-product-row",
@@ -57,17 +58,18 @@
         "style": "row",
         "collection": "new-arrivals",
         "limit": 8,
-        "eyebrow": "New on the shelf",
-        "heading": "Just unpacked this week",
-        "link_label": "See everything new"
+        "eyebrow": "",
+        "heading": "Just in",
+        "link_label": "See all new"
       }
     },
     "story": {
       "type": "hsd-story",
       "settings": {
-        "eyebrow": "Seen us on Facebook?",
-        "heading": "Welcome in.",
-        "heading_accent": "This is the shop from the video.",
+        "eyebrow": "",
+        "heading": "The shop from the video",
+        "heading_accent": "",
+        "text": "<p>Same shelves, same family. Now a click away.</p>",
         "views": "547,000 views",
         "button_label": "Shop what you saw",
         "facebook_url": "https://www.facebook.com/profile.php?id=61584709565690"
@@ -76,11 +78,12 @@
     "kits": {
       "type": "hsd-kits",
       "blocks": {
-        "k1": { "type": "kit", "settings": { "title": "Biryani night", "blurb": "Long-grain rice, whole spices and ghee for a pot that feeds the whole table.", "tint": "gold" } },
-        "k2": { "type": "kit", "settings": { "title": "Morning tea ritual", "blurb": "Slow mornings, done properly. Loose leaf, spice and something sweet.", "tint": "green" } },
-        "k3": { "type": "kit", "settings": { "title": "Pantry starter", "blurb": "New kitchen, new city? The everyday basics from our own shelves.", "tint": "red" } }
+        "k1": { "type": "kit", "settings": { "title": "Biryani night", "blurb": "Rice, whole spices and ghee.", "tint": "gold" } },
+        "k2": { "type": "kit", "settings": { "title": "Morning tea ritual", "blurb": "Loose leaf, spice, something sweet.", "tint": "green" } },
+        "k3": { "type": "kit", "settings": { "title": "Pantry starter", "blurb": "Everyday basics for a new kitchen.", "tint": "red" } }
       },
-      "block_order": ["k1", "k2", "k3"]
+      "block_order": ["k1", "k2", "k3"],
+      "settings": { "eyebrow": "", "heading": "Cook tonight", "heading_accent": "", "text": "" }
     },
     "wellness": {
       "type": "hsd-product-row",
@@ -88,11 +91,11 @@
         "style": "wellness",
         "collection": "vitamins-supplements",
         "limit": 4,
-        "eyebrow": "The wellness shelf",
-        "heading": "Straight off",
-        "heading_accent": "the label.",
-        "text": "Every bottle is sealed as the maker packed it. We copy ingredients and warnings word for word, and we never add health claims of our own.",
-        "ticks": "Full ingredient list on every page\nLabel photos, front and back\nAsk us anything by phone",
+        "eyebrow": "",
+        "heading": "Straight off the label",
+        "heading_accent": "",
+        "text": "Sealed as the maker packed it. Labels copied word for word.",
+        "ticks": "Full label on every page\nAsk us anything by phone",
         "link_label": "Browse the wellness shelf",
         "show_disclaimer": true
       }
@@ -100,12 +103,12 @@
     "visit": {
       "type": "hsd-visit-delivery",
       "blocks": {
-        "r1": { "type": "row", "settings": { "label": "Standard delivery, anywhere in the US", "value": "$20" } },
-        "r2": { "type": "row", "settings": { "label": "Leaves our shop", "value": "Next business day" } },
-        "r3": { "type": "row", "settings": { "label": "Tracking", "value": "Emailed when it ships" } }
+        "r1": { "type": "row", "settings": { "icon": "truck", "label": "US delivery", "value": "$20" } },
+        "r2": { "type": "row", "settings": { "icon": "box", "label": "Leaves our shop", "value": "Next day" } },
+        "r3": { "type": "row", "settings": { "icon": "eye", "label": "Tracking emailed", "value": "Always" } }
       },
       "block_order": ["r1", "r2", "r3"],
-      "settings": { "delivery_link": "/pages/delivery" }
+      "settings": { "visit_eyebrow": "", "visit_heading": "Visit the shop", "delivery_eyebrow": "", "delivery_heading": "Delivery", "delivery_link": "/pages/delivery" }
     }
   },
   "order": ["hero", "trust", "departments", "just-unpacked", "story", "kits", "wellness", "visit"]

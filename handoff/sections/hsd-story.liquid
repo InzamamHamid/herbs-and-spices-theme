@@ -3,7 +3,9 @@
   <div class="hsd-container hsd-story">
     <div class="hsd-story__media">
       {%- if s.poster != blank -%}
-        {{ s.poster | image_url: width: 1200 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200', sizes: '(min-width: 990px) 50vw, 100vw', alt: '' }}
+        {{ s.poster | image_url: width: 1600 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200, 1600', sizes: '(min-width: 990px) 60vw, 100vw', alt: '' }}
+      {%- else -%}
+        <span class="hsd-photo-slot" aria-hidden="true">Video cover photo</span>
       {%- endif -%}
       {%- if s.video != blank or s.video_url != blank -%}
         <button type="button" class="hsd-story__play" data-hsd-video aria-label="Play the video">
@@ -32,7 +34,7 @@
       {%- if s.eyebrow != blank -%}<p class="hsd-eyebrow">{{ s.eyebrow | escape }}</p>{%- endif -%}
       <h2 class="hsd-h2" id="HsStoryTitle-{{ section.id }}">{{ s.heading | escape }}{% if s.heading_accent != blank %} <span class="hsd-accent">{{ s.heading_accent | escape }}</span>{% endif %}</h2>
       {%- if s.text != blank -%}<div class="hsd-lede">{{ s.text }}</div>{%- endif -%}
-      {%- if s.quote != blank -%}<p class="hsd-story__quote">“{{ s.quote | escape }}”</p>{%- endif -%}
+      {%- if s.quote != blank -%}<blockquote class="hsd-story__quote">“{{ s.quote | escape }}”</blockquote>{%- endif -%}
       <div class="hsd-hero__actions">
         {%- if s.button_label != blank -%}<a class="hsd-btn hsd-btn--turmeric" href="{{ s.button_link | default: routes.all_products_collection_url }}">{{ s.button_label | escape }}</a>{%- endif -%}
         {%- if s.facebook_url != blank -%}<a class="hsd-btn hsd-btn--outline" href="{{ s.facebook_url }}" target="_blank" rel="noopener">{% render 'hsd-icon', icon: 'facebook', size: 18 %}Follow us</a>{%- endif -%}
@@ -50,7 +52,7 @@
     { "type": "text", "id": "heading", "label": "Heading", "default": "Welcome in." },
     { "type": "text", "id": "heading_accent", "label": "Heading — italic part", "default": "This is the shop from the video." },
     { "type": "richtext", "id": "text", "label": "Text", "default": "<p>The same shelves, the same family behind the counter. Most of what you saw is now a click away. A few products stay in-store or by phone only — call us on (229) 513-4377 and we will help.</p>" },
-    { "type": "text", "id": "quote", "label": "Owner quote (handwritten)", "info": "Use the owner's real words" },
+    { "type": "text", "id": "quote", "label": "Owner quote", "info": "Use the owner's real words" },
     { "type": "image_picker", "id": "poster", "label": "Video cover image" },
     { "type": "video", "id": "video", "label": "Video (uploaded to Shopify)", "info": "Best option: fast and works on every phone" },
     { "type": "video_url", "id": "video_url", "label": "Or YouTube / Vimeo link", "accept": ["youtube", "vimeo"] },
